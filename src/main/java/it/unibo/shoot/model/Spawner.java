@@ -21,7 +21,7 @@ public class Spawner {
 
     public void tick() {
         timer++;
-        if(timer >= 1000){                                      //quando il timer raggiunge il tempo si azzera e fa spawnare un nemico
+        if(timer >= 100){                                      //quando il timer raggiunge il tempo si azzera e fa spawnare un nemico
             timer = 0;
             spawnEnemy();
         }
