@@ -11,13 +11,11 @@ public class Spawner {
     private SpriteSheet ss;
     private Random r = new Random();
     private int timer = 0;
-    private GameObject player;
     private BufferedImage map;
 
-    public Spawner(Handler handler, SpriteSheet ss, GameObject player, BufferedImage map){
+    public Spawner(Handler handler, SpriteSheet ss, BufferedImage map){
         this.handler = handler;
         this.ss = ss;
-        this.player = player;
         this.map = map;
     }
 
@@ -35,8 +33,8 @@ public class Spawner {
         int maxAttempts = 30;
 
         do {
-            x = player.getX() + (r.nextInt(200) - 100);                     //fa spawnare un nemico vicino al player, se il punto di spawn non è sopra un muro
-            y = player.getY() + (r.nextInt(200) - 100);
+            x = r.nextInt(map.getWidth()) * Constants.TILE_SIZE;                     //fa spawnare un nemico a caso nella mappa, se il punto di spawn non è sopra un muro
+            y = r.nextInt(map.getHeight()) * Constants.TILE_SIZE;
             maxAttempts--;
         } while (isWall(x,y) && maxAttempts > 0);
 

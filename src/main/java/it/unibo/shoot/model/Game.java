@@ -55,7 +55,7 @@ enemy_ss = new SpriteSheet(loader.loadImage("/sprites/enemies.png"));
 
         // 3. Crea il mondo
         loadLevel(level);
-        //spawner = new Spawner(handler, enemy_ss, player, level);
+        spawner = new Spawner(handler, enemy_ss, level);
 
         // 4. Crea la finestra
         new Window(width, height, title, this);
@@ -99,6 +99,7 @@ enemy_ss = new SpriteSheet(loader.loadImage("/sprites/enemies.png"));
             }
         }
         handler.tick();
+        spawner.tick();
     }
 
     public void render() {
