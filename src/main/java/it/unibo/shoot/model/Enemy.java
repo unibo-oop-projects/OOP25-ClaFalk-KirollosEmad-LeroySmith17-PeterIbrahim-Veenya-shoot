@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import it.unibo.shoot.loader.SpriteSheet;
+import java.util.Random;
 
 public class Enemy extends GameObject{
 
@@ -18,7 +19,7 @@ public class Enemy extends GameObject{
         this.ss = ss;
     }
 
-    @override
+    @Override
     public void tick()  {
         x += velX;
         y += velY;
@@ -29,7 +30,7 @@ public class Enemy extends GameObject{
         for(int i = 0; i < handler.object.size(); i++) {
             GameObject tempObject = handler.object.get(i);
 
-            if(tempObject.getId() == ID.player) {                               //trova il player
+            if(tempObject.getId() == ID.Player) {                               //trova il player
                 player = tempObject;
             }
 
@@ -76,17 +77,17 @@ public class Enemy extends GameObject{
     }
 
 
-    @override
+    @Override
     public void render(Graphics g) {
         g.setColor(Color.yellow);                                               //"base" del nemico (per ora e' un rettangolo giallo)
         g.fillRect(x, y, 32, 32);
     }
 
-    @override
+    @Override
     public Rectangle getBounds() {                                              //"rettangolo" del nemico
         return new Rectangle(x, y, 32, 32);
     }
-    @override
+
     public Rectangle getBoundsBig() {                                           //"area" di collisione del nemico (serve per registrare la "hitbox" e non farlo schiantare dentro al muro)
         return new Rectangle(x-16, y-16, 64, 64);
     }

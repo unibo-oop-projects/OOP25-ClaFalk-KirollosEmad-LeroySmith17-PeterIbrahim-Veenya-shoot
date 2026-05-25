@@ -19,7 +19,7 @@ public class Spawner {
         if(timer >= 1000){
             timer = 0;
             int x = r.nextInt(1000);
-            int Y = r.nextInt(700);
+            int y = r.nextInt(700);
             handler.addObject(new Enemy(x,y,ID.Enemy,ss,handler));
         }
     }
