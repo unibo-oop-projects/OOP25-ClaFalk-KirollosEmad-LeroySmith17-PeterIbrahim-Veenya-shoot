@@ -4,9 +4,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import it.unibo.shoot.model.Bullet;
+import it.unibo.shoot.model.Game;
 import it.unibo.shoot.model.GameObject;
 import it.unibo.shoot.model.Handler;
 import it.unibo.shoot.model.ID;
+import it.unibo.shoot.model.STATE;
 import it.unibo.shoot.view.Camera;
 
 public class MouseInput extends MouseAdapter {
@@ -21,6 +23,10 @@ public class MouseInput extends MouseAdapter {
 
     @Override
     public void mousePressed(MouseEvent e) {
+        if (Game.gameState == STATE.MENU) {
+            Game.gameState = STATE.GAME; // Cambia stato e avvia l'azione!
+            return; // Ferma il codices q
+        }
         // 1. Prendiamo le coordinate del click sullo schermo
         int mx = e.getX();
         int my = e.getY();

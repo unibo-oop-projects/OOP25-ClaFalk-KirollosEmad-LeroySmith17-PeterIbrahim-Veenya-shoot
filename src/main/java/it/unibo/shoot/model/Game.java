@@ -34,6 +34,8 @@ public class Game extends Canvas implements Runnable {
     int width = Constants.SCREEN_WIDTH;
     int height = Constants.SCREEN_HEIGHT;
     String title = Constants.TITLE;
+    // Impostiamo il MENU come stato iniziale all'avvio del gioco
+public static STATE gameState = STATE.GAME;
 
     public Game() {
         // 1. Inizializza Handler e Camera
@@ -92,39 +94,54 @@ enemy_ss = new SpriteSheet(loader.loadImage("/sprites/enemies.png"));
         stop();
     }
 
-    public void tick() {
-        for (int i = 0; i<handler.object.size(); i++) {
-            if (handler.object.get(i).getId() == ID.Player) {
-                camera.tick(handler.object.get(i));
-            }
-        }
+    private void tick() {
+    if (gameState == STATE.GAME) {
         handler.tick();
-        spawner.tick();
+        if (spawner != null) {
+                spawner.tick();
+            }
+        camera.tick(handler.getPlayer()); // Supponendo che tu passi il player alla camera
+    } else if (gameState == STATE.MENU) {
+        // Qui aggiornerai la logica del menu di Peter (se necessaria)
+    } else if (gameState == STATE.GAME_OVER) {
+        // La fisica è completamente congelata. Nessun movimento, nessun proiettile.
     }
+}
 
-    public void render() {
+    private void render() {
         BufferStrategy bs = this.getBufferStrategy();
         if (bs == null) {
             this.createBufferStrategy(3);
             return;
         }
         Graphics g = bs.getDrawGraphics();
-        Graphics2D g2d = (Graphics2D) g;
-        
-        g.setColor(Color.pink);
-        g.fillRect(0, 0, width, height);
-        
-        g2d.translate(-camera.getX(), -camera.getY());
 
-        for (int xx = 0; xx < 30*72; xx+=32) {
-            for (int yy=0; yy < 30*72; yy+=32) {
-                g.drawImage(floor, xx, yy, null);
-            }
+        // 1. PULIZIA ASSOLUTA: Questo deve avvenire PRIMA di muovere la telecamera
+        // 1. PULIZIA ASSOLUTA: Sostituisci Color.BLACK con il grigio chiaro
+    g.setColor(Color.LIGHT_GRAY); // <--- CAMBIA QUESTO! (Oppure Color.GRAY)
+    g.fillRect(0, 0, 1000, 563);// Sostituisci con le dimensioni reali della tua finestra
+
+        // 2. SMISTAMENTO DEGLI STATI
+        if (gameState == STATE.GAME) {
+            
+            // FONDAMENTALE: La telecamera si muove QUI, solo dentro lo stato GAME
+            g.translate((int)-camera.getX(), (int)-camera.getY());
+            
+            // Disegna tutto il mondo, la mappa, i player e i nemici
+            handler.render(g);
+            
+            // FONDAMENTALE: La telecamera torna indietro. 
+            // Se non lo fai, Peter non potrà disegnare l'HUD fermo sullo schermo!
+            g.translate((int)camera.getX(), (int)camera.getY());
+            
+        } else if (gameState == STATE.MENU) {
+            g.setColor(Color.WHITE);
+            g.drawString("MENU PRINCIPALE - Clicca per giocare", 200, 200);
+            
+        } else if (gameState == STATE.GAME_OVER) {
+            g.setColor(Color.RED);
+            g.drawString("GAME OVER - SEI MORTO", 200, 200);
         }
-        
-        handler.render(g);
-
-        g2d.translate(camera.getX(), camera.getY());
 
         g.dispose();
         bs.show();

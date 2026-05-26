@@ -39,4 +39,14 @@ public class Handler {
     public List<GameObject> getObjects() {
         return object;
     }
+    // Aggiungi questo in fondo a Handler.java
+    public GameObject getPlayer() {
+        for (int i = 0; i < object.size(); i++) {
+            GameObject tempObject = object.get(i);
+            if (tempObject.getId() == ID.Player) {
+                return tempObject; // Trovato! Lo restituisce alla telecamera
+            }
+        }
+        return null; // Se il loop finisce e il player non c'è (es. è morto), restituisce null
+    }
 }

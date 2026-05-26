@@ -28,6 +28,10 @@ public class Player extends GameObject {
 
     @Override
     public void tick() {
+        if (model.isDead()) {
+            Game.gameState = STATE.GAME_OVER;
+            return; // Esce immediatamente, non disegna e non calcola più nulla.
+        }
         controller.update(); 
         model.updatePosition();
         model.updateAnimation(); 
@@ -58,6 +62,12 @@ public class Player extends GameObject {
                     model.setVelocity(0, 0);
                 }
             }
+            if (tempObject.getId() == ID.Enemy) {
+    if (getBounds().intersects(tempObject.getBounds())) {
+        model.takeDamage(1); 
+        System.out.println("Danno subito! Vita: " + model.getHealth());
+    }
+}
         }
     }
 
@@ -75,4 +85,5 @@ public class Player extends GameObject {
     public Rectangle getBounds() {
         return model.getHitbox();
     }
+    
 }

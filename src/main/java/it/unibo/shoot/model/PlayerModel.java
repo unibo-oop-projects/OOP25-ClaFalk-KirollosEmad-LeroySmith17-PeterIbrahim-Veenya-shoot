@@ -6,6 +6,8 @@ public class PlayerModel {
     private double speed;
     private int health;
     private int maxHealth;
+    private boolean isDead = false;
+   
     
    
 
@@ -19,6 +21,10 @@ public class PlayerModel {
     // Dimensioni per la Hitbox (rimangono 32x32 per la fisica del gioco)
     private final int width = 32;
     private final int height = 32;
+
+    // Variabili per l'invincibilità
+    private long lastDamageTime = 0; 
+    private final int iFramesDuration = 1000; // 1000 millisecondi = 1 secondo
 
     public PlayerModel(double startX, double startY, double speed, int maxHealth) {
         this.x = startX;
@@ -59,11 +65,32 @@ public class PlayerModel {
         }
     }
 
-    public void takeDamage(int amount){
-        this.health -= amount;
-        if(health <= 0){
-            health = 0;
-            //finisce la partita
+    public void takeDamage(int damage) {
+        // 1. Se sei già a 0, il codice si ferma. I morti non prendono danni extra.
+        if (this.health <= 0) {
+        this.health = 0;
+        this.isDead = true; // <--- FONDAMENTALE!
+        System.out.println("GAME OVER! Vita: 0");
+    }
+
+        // 2. Controllo del tempo: chiediamo a Java l'ora esatta in millisecondi
+        long currentTime = System.currentTimeMillis();
+        
+        // Se la differenza tra "ora" e "l'ultima volta che hai preso danno" è minore di 1 secondo...
+        if (currentTime - lastDamageTime < iFramesDuration) {
+            return; // ...ignora il colpo! Sei invincibile.
+        }
+
+        // 3. Se il codice arriva fin qui, è passato più di 1 secondo. Prendi danno!
+        this.health -= damage;
+        this.lastDamageTime = currentTime; // Resetta il cronometro per il prossimo colpo
+
+        // 4. Controllo del Game Over
+        if (this.health <= 0) {
+            this.health = 0;
+            System.out.println("GAME OVER! Vita: 0");
+        } else {
+            System.out.println("Danno subito! Vita attuale: " + this.health);
         }
     }
 
@@ -85,5 +112,8 @@ public class PlayerModel {
 
     public Rectangle getHitbox() {
         return new Rectangle((int)x, (int)y, width, height);
+    }
+    public boolean isDead() {
+        return this.isDead;
     }
 }
