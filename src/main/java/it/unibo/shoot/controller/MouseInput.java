@@ -70,8 +70,11 @@ public class MouseInput extends MouseAdapter {
                 int startX = (int) tempObject.getX() + 16;
                 int startY = (int) tempObject.getY() + 16;
 
+                Player player = (Player) tempObject;
+                int damage = (int)(50 * player.getDamageMultiplier());
+
                 // Creiamo il proiettile che viaggia da startX,startY fino a worldX,worldY
-                handler.addObject(new Bullet(startX, startY, ID.Bullet, handler, worldX, worldY, null));
+                handler.addObject(new Bullet(startX, startY, ID.Bullet, handler, worldX, worldY, null, damage));
                 game.ammo--;
                 break; // Usciamo dal ciclo, abbiamo già sparato
             }

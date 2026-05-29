@@ -8,10 +8,12 @@ import it.unibo.shoot.model.*;
 public class Bullet extends GameObject {
 
     private Handler handler;
+    private int damage = 50;
 
-    public Bullet(int x, int y, ID id, Handler handler, int mx, int my, SpriteSheet ss) {
+    public Bullet(int x, int y, ID id, Handler handler, int mx, int my, SpriteSheet ss, int damage) {
         super(x, y, id, ss);
         this.handler = handler;
+        this.damage = damage;
 
         // Logica semplice: calcoliamo la direzione verso il mouse (mx, my)
         // Per ora facciamo una velocità fissa verso destra/sinistra/su/giù 
@@ -48,6 +50,10 @@ public class Bullet extends GameObject {
                 }
             }
         }
+    }
+
+    public int getDamage() {
+        return damage;
     }
 
     @Override
