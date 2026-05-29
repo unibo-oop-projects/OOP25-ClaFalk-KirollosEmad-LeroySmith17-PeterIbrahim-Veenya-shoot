@@ -25,6 +25,6 @@ public class Main {
 
         //TODO solve this squiggly line thing
         Game game = new Game();
-        //game.start();
+        game.start();
     }
 }
