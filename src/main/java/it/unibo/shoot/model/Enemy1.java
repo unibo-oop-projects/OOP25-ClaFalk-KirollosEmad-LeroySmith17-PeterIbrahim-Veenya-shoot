@@ -9,3 +9,7 @@ public class Enemy1 extends Enemy{
         this.hp = 100;
         }
 }
+
+
+//questo è il nemico "base" con vita impostata a 100 e danni e xp base presenti in Enemy.java
+//danno = 10 = xp
