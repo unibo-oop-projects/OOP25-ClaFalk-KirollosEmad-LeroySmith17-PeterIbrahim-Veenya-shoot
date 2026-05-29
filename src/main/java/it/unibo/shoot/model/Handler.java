@@ -1,27 +1,19 @@
 package it.unibo.shoot.model;
 
-import java.util.LinkedList;
-import java.util.Comparator;
+import it.unibo.shoot.GameObjects.GameObject;
 import java.awt.Graphics;
+// CANCELLIAMO LinkedList
+// import java.util.LinkedList; 
 
+// AGGIUNGIAMO QUESTE DUE:
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-
-/**
- * Class used to update game objects.
- * Every tick it runs through the list of objects, and updates each one.
- * Provides methods to add and remove objects from the game, using a list of objects.
- */
 public class Handler {
-     
-    /** List of all active objects in the game. */
-    LinkedList<GameObject> object = new LinkedList<GameObject>();
 
+    // LA MAGIA È QUI: Usiamo la lista ultra-sicura per i thread
+    public List<GameObject> object = new CopyOnWriteArrayList<>();
 
-    /**
-     * Updates the state of all objects in the game.
-     * 
-     * It runs through every object, stores each one into a temporary object, and ticks every object.
-     */
     public void tick() {
         for (int i = 0; i < object.size(); i++) {
             GameObject tempObject = object.get(i);
@@ -29,32 +21,33 @@ public class Handler {
         }
     }
 
-    /**
-     * Renders all game objects and places them in graphics context.
-     * @param g graphics context.
-     */
     public void render(Graphics g) {
-        // Ordina per layer (ordine crescente)
-        object.sort(Comparator.comparingInt(GameObject::getLayer));
-
         for (int i = 0; i < object.size(); i++) {
-            object.get(i).render(g);
+            GameObject tempObject = object.get(i);
+            tempObject.render(g);
         }
     }
 
-    /**
-     * Adds object to the handler.
-     * @param tempObject object to be added to the handler.
-     */
-    public void addObject(GameObject tempObject) {
-        object.add(tempObject);
+    public void addObject(GameObject object) {
+        this.object.add(object);
     }
 
-    /**
-     * Remove object to the handler.
-     * @param tempObject object to be removed from the handler.
-     */
-    public void removeObject(GameObject tempObject) {
-        object.remove(tempObject);
+    public void removeObject(GameObject object) {
+        this.object.remove(object);
+    }
+
+    // Il getter che abbiamo creato prima, aggiornato per usare "List"
+    public List<GameObject> getObjects() {
+        return object;
+    }
+    // Aggiungi questo in fondo a Handler.java
+    public GameObject getPlayer() {
+        for (int i = 0; i < object.size(); i++) {
+            GameObject tempObject = object.get(i);
+            if (tempObject.getId() == ID.Player) {
+                return tempObject; // Trovato! Lo restituisce alla telecamera
+            }
+        }
+        return null; // Se il loop finisce e il player non c'è (es. è morto), restituisce null
     }
 }

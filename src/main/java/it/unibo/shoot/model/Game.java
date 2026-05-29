@@ -6,84 +6,77 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-
+import it.unibo.shoot.Upgrades.*;
 import it.unibo.shoot.view.Window;
-import it.unibo.shoot.loader.*;  //TODO: maybe it's better to specify the file?
-import it.unibo.shoot.model.block.Block;
+import it.unibo.shoot.controller.MouseInput;
+import it.unibo.shoot.loader.*;  
+import it.unibo.shoot.GameObjects.*;
 import it.unibo.shoot.view.Camera;
 import it.unibo.shoot.util.Constants;
 
-
-/**
- * Main game class: handles window, game loop, rendering and level loading.
- * 
- * Uses a fixed 60 ticks per second to update the loop.
- */
 public class Game extends Canvas implements Runnable {
+    
 
-    //private static final long serialVersionUID = 1L;
     private boolean isRunning = false;
     private Thread thread;
     private Handler handler;
     private Camera camera;
+    private Spawner spawner;
+    private Player player;
+    private LevelManager levelManager;
+    public static java.util.List<it.unibo.shoot.Upgrades.Upgrade> currentUpgradeOptions = new java.util.ArrayList<>();
+    // Variabili di classe (visibili a tutti i metodi)
     private SpriteSheet tile_ss;
-    //TODO: other spritesheets
-    //private SpriteSheet player_ss;
-    //private Spritesheet enemy_ss;
+    private SpriteSheet player_ss;
+    private SpriteSheet enemy_ss;
 
     private BufferedImage level = null;
-    //private BufferedImage tile_sheet = null;
     private BufferedImage floor = null;
     private BufferedImage block = null;
-    //private BufferedImage player_sheet = null;
-    //private BufferedImage enemy_sheet = null;
-    // TODO other sheets if needed...
-
-    
-
+    private BufferedImage crate_tex = null;
+    public int ammo = 50 ;
     int width = Constants.SCREEN_WIDTH;
     int height = Constants.SCREEN_HEIGHT;
     String title = Constants.TITLE;
-    
+    // Impostiamo il MENU come stato iniziale all'avvio del gioco
+public static STATE gameState = STATE.GAME;
 
-
-    //TODO: da finire
-    /**
-     * Constructof of Game object.
-     * Initializes window, handler, image loader. 
-     */
     public Game() {
-        // 1. Inizializza Handler e Camera (fondamentali per caricare il livello)
+        // 1. Inizializza Handler e Camera
         handler = new Handler();
         camera = new Camera(0, 0);
 
-        // 2. Carica le immagini
-        BufferedImageLoader loader = new BufferedImageLoader();
-        level = loader.loadImage("/maps/map1.png");
-        tile_ss = new SpriteSheet("/tiles/tileset.png");
-        
-        floor = tile_ss.grabImage(0, 0);
-        block = tile_ss.grabImage(1, 0);
+        // 2. Carica Immagini e SpriteSheets
+        // 2. Carica Immagini e SpriteSheets
+BufferedImageLoader loader = new BufferedImageLoader();
+level = loader.loadImage("/maps/map1.png");
 
-        // 3. Crea il mondo (ora che handler e tile_ss sono pronti)
+// CORREZIONE QUI: Usa il loader per trasformare il testo in un'immagine vera e propria
+tile_ss = new SpriteSheet(loader.loadImage("/tiles/tileset.png"));
+player_ss = new SpriteSheet(loader.loadImage("/sprites/player.png"));
+enemy_ss = new SpriteSheet(loader.loadImage("/sprites/enemies.png"));
+crate_tex = loader.loadImage("/object/crate.png");
+        
+       floor = tile_ss.grabImage(0, 0, Constants.TILE_SIZE, Constants.TILE_SIZE);
+        block = tile_ss.grabImage(1, 0, Constants.TILE_SIZE, Constants.TILE_SIZE);
+
+        // 3. Crea il mondo
+        levelManager = new LevelManager(null);
         loadLevel(level);
+        levelManager.setPlayer(player);
+        //LevelManager levelManager = new LevelManager(player);
+        spawner = new Spawner(handler, enemy_ss, level, levelManager);
 
         // 4. Crea la finestra
         new Window(width, height, title, this);
-
-        // 5. SOLO ORA puoi partire!
-        start();
+        this.addMouseListener(new MouseInput(handler, camera,this));
+        
+        
     }
-    // CANCELLA ogni altro start(); o parentesi che trovi tra qui e il metodo run()
 
-    // Notch (Markus Persson) made this game loop
-    // TODO: this is wrong, fix it. Also make better javadoc.
-    /**
-     * Updates window 60 times per second, updating the render method a couple thousands times per second.
-    */
     @Override
     public void run() {
-        this.requestFocus();// TODO: why
+        this.requestFocus();
         long lastTime = System.nanoTime();
         double amountOfTicks = 60.0;
         double ns = 1000000000 / amountOfTicks;
@@ -96,7 +89,6 @@ public class Game extends Canvas implements Runnable {
             lastTime = now;
             while (delta >= 1) {
                 tick();
-                //updates++;
                 delta --;
             }
             render();
@@ -105,113 +97,239 @@ public class Game extends Canvas implements Runnable {
             if (System.currentTimeMillis() - timer > 1000) {
                 timer += 1000;
                 frames = 0;
-                //updates = 0;
             }
         }
         stop();
     }
 
-    /**
-     * Updates everything in the game. It runs 60 times per second.
-     */
-    public void tick() {
-        for (int i = 0; i<handler.object.size(); i++) {
-            if (handler.object.get(i).getId() == ID.Player) {
-                camera.tick(handler.object.get(i));
-            }
-        }
+    private void tick() {
+    if (gameState == STATE.GAME) {
         handler.tick();
+        if (spawner != null) {
+                spawner.tick();
+            }
+            if(handler.getPlayer() != null){
+              camera.tick((Player) handler.getPlayer()); // Supponendo che tu passi il player alla camera
+            }
+         
+    } else if (gameState == STATE.MENU) {
+        // Qui aggiornerai la logica del menu di Peter (se necessaria)
+    } else if (gameState == STATE.GAME_OVER) {
+        // La fisica è completamente congelata. Nessun movimento, nessun proiettile.
+    } else if (gameState == STATE.LEVEL_UP){
+        
     }
 
-    /**
-     * Renders everything in the game using graphics.
-     * It runs a couple thousand times per second.
-     */
-    public void render() {
+}
+
+  private void render() {
         BufferStrategy bs = this.getBufferStrategy();
         if (bs == null) {
-            // Preloads (3) frames behind the actual window
             this.createBufferStrategy(3);
             return;
         }
         Graphics g = bs.getDrawGraphics();
         Graphics2D g2d = (Graphics2D) g;
-        ////////////////
-        // Background
-        g.setColor(Color.pink);
+
+        // 1. PULIZIA ASSOLUTA: Sfondo grigio chiaro
+        g.setColor(Color.LIGHT_GRAY);
         g.fillRect(0, 0, width, height);
-        
-        g2d.translate(-camera.getX(), -camera.getY());
 
-        //TODO change numbers
-        for (int xx = 0; xx < 30*72; xx+=32) {
-            for (int yy=0; yy < 30*72; yy+=32) {
-                g.drawImage(floor, xx, yy, null);
+        // 2. SMISTAMENTO DEGLI STATI
+        if (gameState == STATE.GAME || gameState == STATE.LEVEL_UP) {
+            
+            // Disegna il mondo di gioco (se siamo in LEVEL_UP, rimane visibile sotto congelato)
+            g.translate((int)-camera.getX(), (int)-camera.getY());
+            handler.render(g);
+          
+            g.translate((int)camera.getX(), (int)camera.getY());
+            Player p = (Player) handler.getPlayer();
+            if (p != null) {
+                int hp = p.getHealth();
+                int maxHp = p.getMaxHealth();
+                int currentXP = levelManager.getCurrentXP();                // Evita divisioni per zero se maxHp è nullo o negativo
+                if (maxHp > 0) {
+                    int barWidth = 200;  // Larghezza totale della barra in pixel
+                    int barHeight = 20;  // Altezza della barra in pixel
+                    int HPbarX = 0;       // Posizione X sullo schermo (in alto a sinistra)
+                    int HPbarY = 0;       // Posizione Y sullo schermo
+                    int EXPbarX = width - barWidth - 10; // Dynamically positions it near the right edge
+                    int EXPbarY = 0;       // Posizione Y sullo schermo
+                    // Calcola proporzionalmente i pixel rimanenti della vita attuale
+                    int currentHPBarWidth = (int) (((double) hp / maxHp) * barWidth);
+                    int currentEXPBarWidth = (int) (((double) currentXP / 100) * barWidth);
+                    // 1. Sfondo Grigio Scuro / Rosso (Vita persa o mancante)
+                    g.setColor(new Color(150, 0, 0));
+                    g.fillRect(HPbarX, HPbarY, barWidth, barHeight);
+                    
+                    // 2. Barra Verde Dinamica (Vita attuale del giocatore)
+                    g.setColor(new Color(0, 180, 0));
+                    g.fillRect(HPbarX, HPbarY, currentHPBarWidth, barHeight);
+                    
+                    // 3. Contorno Nero Elegante attorno all'intera barra
+                    g.setColor(Color.BLACK);
+                    g.drawRect(HPbarX, HPbarY, barWidth, barHeight);
+                    
+
+                    // 1. Sfondo Grigio Scuro / Rosso (Vita persa o mancante)
+                    g.setColor(new Color(100, 0, 0));
+                    g.fillRect(EXPbarX, EXPbarY, barWidth, barHeight);
+                    
+                    // 2. Barra Verde Dinamica (Vita attuale del giocatore)
+                    g.setColor(new Color(0, 0, 200));
+                    g.fillRect(EXPbarX, EXPbarY, currentEXPBarWidth, barHeight);
+                    
+                    // 3. Contorno Nero Elegante attorno all'intera barra
+                    g.setColor(Color.BLACK);
+                    g.drawRect(EXPbarX, EXPbarY, barWidth, barHeight);
+
+
+                    int AMMOx = 460; // Posizionato subito dopo la barra EXP (240 + 200 + 20 di spazio)
+                    int AMMOy = 0;
+                    
+                    // Disegna un piccolo sfondo scuro rettangolare per far risaltare il testo delle munizioni
+                    g.setColor(new Color(30, 30, 30, 200));
+                    g.fillRoundRect(AMMOx, AMMOy, 90, barHeight, 5, 5);
+                    g.setColor(Color.BLACK);
+                    g.drawRoundRect(AMMOx, AMMOy, 90, barHeight, 5, 5);
+                    
+                    // Colore dinamico: arancione/rosso se rimangono pochi colpi, altrimenti giallo lucido
+                    if (ammo <= 10) {
+                        g.setColor(Color.RED);
+                    } else {
+                        g.setColor(Color.ORANGE);
+                    }
+                    
+                    g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 12));
+                    g.drawString("AMMO: " + ammo, AMMOx + 15, AMMOy + 14); // Stampa "AMMO: 50"
+
+
+
+
+
+                }
             }
+            
+
+            // SE SIAMO IN LIVELLO SUPERIORE, DISEGNA L'OVERLAY DEL MENU UPGRADE
+            if (gameState == STATE.LEVEL_UP) {
+                // Sfondo oscurato semi-trasparente
+                g.setColor(new Color(0, 0, 0, 150));
+                g.fillRect(0, 0, width, height);
+
+                // Titolo del Menu
+                g.setColor(Color.YELLOW);
+                g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 30));
+                g.drawString("SCEGLI UN UPGRADE!", width / 2 - 150, 80);
+
+                // Sottotitolo informativo
+                g.setColor(Color.WHITE);
+                g.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 14));
+                g.drawString("Clicca su una delle opzioni per potenziare il tuo eroe", width / 2 - 160, 110);
+
+                // Disegna le 3 opzioni/pulsanti grafici
+                g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 16));
+                for (int i = 0; i < currentUpgradeOptions.size(); i++) {
+                    Upgrade u = currentUpgradeOptions.get(i);
+                    int cardX = 120 + (i * 260); // Spaziatura orizzontale delle schede
+                    int cardY = 180;
+                    int cardW = 220;
+                    int cardH = 250;
+
+                    // Sfondo della scheda dell'upgrade
+                    g.setColor(new Color(40, 40, 50));
+                    g.fillRoundRect(cardX, cardY, cardW, cardH, 15, 15);
+                    
+                    // Bordo dorato lucido
+                    g.setColor(new Color(218, 165, 32));
+                    g.drawRoundRect(cardX, cardY, cardW, cardH, 15, 15);
+
+                    // Nome dell'upgrade
+                    g.setColor(Color.CYAN);
+                    g.drawString(u.getName(), cardX + 20, cardY + 40);
+
+                    // Livello Attuale
+                    g.setColor(Color.LIGHT_GRAY);
+                    g.setFont(new java.awt.Font("Arial", java.awt.Font.ITALIC, 13));
+                    g.drawString("Livello Attuale: " + u.getCurrentLevel(), cardX + 20, cardY + 70);
+
+                    // Descrizione degli effetti bonus
+                    g.setColor(Color.WHITE);
+                    g.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 14));
+                    // Dividiamo il testo per andare a capo se necessario
+                    g.drawString(u.getDescription(), cardX + 20, cardY + 140);
+                    
+                    // Indicazione d'interazione in fondo alla scheda
+                    g.setColor(Color.YELLOW);
+                    g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 12));
+                    g.drawString("[ CLICCA PER SCEGLIERE ]", cardX + 35, cardY + 220);
+                    g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 16)); // ripristina font
+                }
+            }
+            
+        } else if (gameState == STATE.MENU) {
+            g.setColor(Color.WHITE);
+            g.drawString("MENU PRINCIPALE - Clicca per giocare", 200, 200);
+            
+        } else if (gameState == STATE.GAME_OVER) {
+            g.setColor(Color.RED);
+            g.drawString("GAME OVER - SEI MORTO", 200, 200);
         }
+
+          
         
-        /*
-        NOTE: it is important to put handler after the background
-        because graphics is placed top to bottom
-        */
-       
-        handler.render(g);
-
-        g2d.translate(camera.getX(), camera.getY());
-
-        //TODO: HUD coordinate fisse sullo schermo
-        //renderHUD(g);
-
-        /////////////
         g.dispose();
         bs.show();
     }
 
-    /**
-     * Loads level from image.
-     * @param image that will be displayed as level map.
-     */
     private void loadLevel(BufferedImage image) {
         int w = image.getWidth();
         int h = image.getHeight();
 
-        System.out.println(w);
-
-        // TODO: use global variables
         for (int xx = 0; xx < w; xx++) {
             for (int yy = 0; yy < h; yy++) {
                 int pixel = image.getRGB(xx, yy);
-                // TODO: understand this
                 int red = (pixel >> 16) & 0xff;
                 int green = (pixel >> 8) & 0xff;
                 int blue = (pixel) & 0xff;
 
-                if (red == 255) {
+                if(red == 255 && blue == 0 && green == 0) {
                     handler.addObject(new Block(xx*Constants.TILE_SIZE, yy*Constants.TILE_SIZE, ID.Block, tile_ss));
                 }
 
-                if (blue == 255) {
-                    //TODO: player
-                    handler.addObject(new Player(xx*32, yy*32, ID.Player, this, tile_ss, handler));
-                    //TODO: change, this i sonly a test
-                  
+                else if (blue == 255 && red == 0 && green == 0) {
+                    // Creiamo il Player passando player_ss
+                    player = new Player(xx*32, yy*32, ID.Player, this, player_ss, handler, this);
+                    handler.addObject(player);
+                    //handler.addObject(new Player(xx*32, yy*32, ID.Player, this, player_ss, handler));
                 }
 
-                if (green == 255) {
-                    //TODO ...
+                else if (green == 255 && blue == 0 && red == 0) {                                 //creo i nemici base
+                    handler.addObject(new Enemy1(xx * Constants.TILE_SIZE, yy * Constants.TILE_SIZE, ID.Enemy, enemy_ss, handler, levelManager));
                 }
+
+                else if (green == 255 && red == 255 && blue == 0) {                                 //creo i nemici base
+                    handler.addObject(new Enemy2(xx * Constants.TILE_SIZE, yy * Constants.TILE_SIZE, ID.Enemy, enemy_ss, handler, levelManager));
+                }
+
+                else if (green == 255 && blue == 255 && red == 0) {                                 //creo i nemici base
+                    handler.addObject(new Enemy3(xx * Constants.TILE_SIZE, yy * Constants.TILE_SIZE, ID.Enemy, enemy_ss, handler, levelManager));
+                }
+
+                else if (red == 255 && blue == 255 && green == 0) {
+                    handler.addObject(new Crate(xx*Constants.TILE_SIZE, yy*Constants.TILE_SIZE, ID.Crate, crate_tex));
+                }
+
             }
         }
     }
 
-    /** Starts thread */
-    private void start() {
+    public void start() {
         isRunning = true;
         thread = new Thread(this);
         thread.start();
     }
 
-    /** Stops thread */
     private void stop() {
         isRunning = false;
         try {
@@ -221,11 +339,5 @@ public class Game extends Canvas implements Runnable {
         }
     }
 
-    /**
-     * Creates new instance of Game calling the constructor.
-     * @param args
-     */
-    public static void main(String args[]) {
-        new Game();
-    }
+    
 }

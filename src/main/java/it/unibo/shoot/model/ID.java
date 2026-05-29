@@ -1,3 +1,5 @@
+package it.unibo.shoot.model;
+
 public enum ID {
     Box(),
     Player(),
@@ -6,5 +8,7 @@ public enum ID {
     Enemy(),
     Weapon(),
     Floor(),
-    Experience();
+    Experience(),
+    Crate(),
+    Boss();
 }
