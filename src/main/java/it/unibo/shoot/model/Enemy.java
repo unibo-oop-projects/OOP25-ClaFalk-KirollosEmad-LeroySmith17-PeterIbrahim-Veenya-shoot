@@ -2,15 +2,14 @@ package it.unibo.shoot.model;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import it.unibo.shoot.model.ID;
 import it.unibo.shoot.loader.SpriteSheet;
 import it.unibo.shoot.GameObjects.GameObject;
-import it.unibo.shoot.model.Handler;
+import it.unibo.shoot.GameObjects.Bullet;
+
 public class Enemy extends GameObject{
 
     private Handler handler;       
-    private LevelManager levelManager;
-    int choose = 0;                                         //scelta del movimento nemico                                
+    private LevelManager levelManager;                       
     protected float speed;                                  //velocita nemico
     protected int hp;                                       //vita del nemico
     protected BufferedImage enemy_ss;
@@ -20,7 +19,7 @@ public class Enemy extends GameObject{
     protected Direction dir = Direction.DOWN;
     protected int frame = 0;
     protected int frameDelay = 0;
-    protected int COL_OFFSET = 0; // ogni sottoclasse può sovrascrivere
+    protected int COL_OFFSET = 0;
     protected int damage = 10;
     protected int xpValue = 10;
 
@@ -61,17 +60,31 @@ public class Enemy extends GameObject{
         
             if (tempObject.getId() == ID.Block) {
                 if (getBoundsBig().intersects(tempObject.getBounds())){          //se toccano un muro vengono rispediti indietro (non si "infila" nel muro)
-                    x += (velX*3) * -1;
-                    y += (velY*3) * -1;
-                    velX *= -1;
-                    velY *= -1;
+                    x -= velX;
+                    y -= velY;
+                    
+                    x += velX;
+                    if (getBoundsBig().intersects(tempObject.getBounds())) {
+                        x -= velX;
+                    }
+
+                    y += velY;
+                    if (getBoundsBig().intersects(tempObject.getBounds())) {
+                        y -= velY;
+                    }
+
+                    if (getBoundsBig().intersects(tempObject.getBounds())) {
+                        x += (Math.random() > 0.5 ? 1 : -1) *2;
+                        y += (Math.random() > 0.5 ? 1 : -1) *2;
+                    }
+                    
                     collision = true;
                 }
             }
 
             if (tempObject.getId() == ID.Bullet) {                              //controlla se il nemico è colpito da un proiettile
                 if (getBounds().intersects(tempObject.getBounds())){
-                    hp -= 50;
+                    hp -= ((Bullet) tempObject).getDamage();                               //se colpito, perde hp in base al danno del proiettile
                     handler.removeObject(tempObject);
                 }
             }
@@ -92,7 +105,7 @@ public class Enemy extends GameObject{
             float distance = (float)Math.sqrt((diffX * diffX) + (diffY * diffY));
 
             if (distance !=0) {
-                velX = (diffX / distance) * speed;
+                velX = (diffX / distance) * speed;                                //si avvicina verso il player a velocita costante
                 velY = (diffY / distance) * speed;
             }
         }
@@ -100,9 +113,9 @@ public class Enemy extends GameObject{
         frameDelay++;
         if (frameDelay >= 10) {
             frameDelay = 0;
-            frame++;
+            frame++;                                                              //ogni 10 tick avanza di un frame
             if (frame >= 3) {
-                frame = 0;
+                frame = 0;                                                        //ritorna a frame 0 dopo aver eseguito completamente frame 2
             }
         }
 
@@ -110,7 +123,7 @@ public class Enemy extends GameObject{
 
     public void render(Graphics g) {
         int row;
-        switch (dir) {
+        switch (dir) {                                                             //switch per cambiare il "verso" del nemico in base a dove guarda
             case UP:
                 row = 0;
                 break;

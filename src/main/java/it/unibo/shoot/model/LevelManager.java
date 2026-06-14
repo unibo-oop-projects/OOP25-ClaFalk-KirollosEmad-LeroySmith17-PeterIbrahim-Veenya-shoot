@@ -70,6 +70,10 @@ public class LevelManager {
     }
 
     public int getCurrentXP() {
-    return this.currentXP;
-}
+        return this.currentXP;
+    }
+
+    public int getNextLevelXP() {
+        return this.nextLevelXP;
+    }
 }

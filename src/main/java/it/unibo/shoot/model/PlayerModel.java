@@ -175,8 +175,8 @@ public class PlayerModel {
         this.health = health ; 
     }
 
-    public int currentXP() {
+    /*public int currentXP() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'currentXP'");
-    }
+    }*/
 }

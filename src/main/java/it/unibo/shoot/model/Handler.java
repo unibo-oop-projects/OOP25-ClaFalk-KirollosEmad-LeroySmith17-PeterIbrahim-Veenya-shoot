@@ -50,4 +50,8 @@ public class Handler {
         }
         return null; // Se il loop finisce e il player non c'è (es. è morto), restituisce null
     }
+
+    public void clearAllObjects() {
+        this.object.clear();
+    }
 }

@@ -2,6 +2,7 @@ package it.unibo.shoot.model;
 
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
@@ -74,6 +75,31 @@ crate_tex = loader.loadImage("/object/crate.png");
         
     }
 
+    public void restartGame() {
+    // 1. Clear out all left-over enemies, blocks, and entities from the previous run
+    handler.clearAllObjects();
+    
+    // 2. Reset status metrics
+    this.ammo = 50; 
+    
+    // 3. Reset the LevelManager to clear experience levels and upgrades
+    // We pass null first because the player hasn't been parsed from the image map yet
+    this.levelManager = new LevelManager(null);
+    
+    // 4. Reload the map image completely (this populates handler and instantiates the new player)
+    loadLevel(level);
+    
+    // 5. Rebind the newly created player back into the fresh LevelManager instance
+    if (this.player != null) {
+        this.levelManager.setPlayer(this.player);
+    }
+    
+    // 6. CRITICAL FIX: Re-instantiate the Spawner so it tracks the NEW levelManager and enemy configurations
+    this.spawner = new Spawner(handler, enemy_ss, level, levelManager);
+    
+    // 7. Reset the game state back to active game tracking
+    Game.gameState = STATE.GAME;
+    }
     @Override
     public void run() {
         this.requestFocus();
@@ -157,7 +183,7 @@ crate_tex = loader.loadImage("/object/crate.png");
                     int EXPbarY = 0;       // Posizione Y sullo schermo
                     // Calcola proporzionalmente i pixel rimanenti della vita attuale
                     int currentHPBarWidth = (int) (((double) hp / maxHp) * barWidth);
-                    int currentEXPBarWidth = (int) (((double) currentXP / 100) * barWidth);
+                    int currentEXPBarWidth = (int) (((double) currentXP / levelManager.getNextLevelXP()) * barWidth);
                     // 1. Sfondo Grigio Scuro / Rosso (Vita persa o mancante)
                     g.setColor(new Color(150, 0, 0));
                     g.fillRect(HPbarX, HPbarY, barWidth, barHeight);
@@ -203,13 +229,9 @@ crate_tex = loader.loadImage("/object/crate.png");
                     g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 12));
                     g.drawString("AMMO: " + ammo, AMMOx + 15, AMMOy + 14); // Stampa "AMMO: 50"
 
-
-
-
-
                 }
             }
-            
+        }
 
             // SE SIAMO IN LIVELLO SUPERIORE, DISEGNA L'OVERLAY DEL MENU UPGRADE
             if (gameState == STATE.LEVEL_UP) {
@@ -266,18 +288,63 @@ crate_tex = loader.loadImage("/object/crate.png");
                     g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 16)); // ripristina font
                 }
             }
-            
-        } else if (gameState == STATE.MENU) {
-            g.setColor(Color.WHITE);
-            g.drawString("MENU PRINCIPALE - Clicca per giocare", 200, 200);
-            
-        } else if (gameState == STATE.GAME_OVER) {
-            g.setColor(Color.RED);
-            g.drawString("GAME OVER - SEI MORTO", 200, 200);
-        }
+        // IMPROVED GAME OVER MENU OVERLAY
+            else if (gameState == STATE.GAME_OVER) {
+                // Blur/Dim background simulation
+                g.setColor(new Color(20, 0, 0, 180));
+                g.fillRect(0, 0, width, height);
 
-          
-        
+                // Elegant Border Frame Card
+                int menuW = 1000;
+                int menuH = 563;
+                int menuX = (width / 2) - (menuW / 2);
+                int menuY = (height / 2) - (menuH / 2);
+
+                g.setColor(new Color(30, 10, 10));
+                g.fillRoundRect(menuX, menuY, menuW, menuH, 20, 20);
+                g.setColor(Color.RED);
+                g.drawRoundRect(menuX, menuY, menuW, menuH, 20, 20);
+
+                // Main Title Text
+                g.setColor(new Color(255, 50, 50));
+                g.setFont(new Font("Impact", Font.PLAIN, 48));
+                g.drawString("SEI MORTO!", menuX + 380, menuY + 70);
+
+                g.setColor(Color.WHITE);
+                g.setFont(new Font("Arial", Font.PLAIN, 16));
+                g.drawString("Il tuo viaggio si è concluso qui nell'arena.", menuX + 350, menuY + 115);
+
+                
+                int btnW = 260;
+                int btnH = 45;
+                int btnX = (width / 2) - (btnW / 2);
+    
+                // --- FIRST BOX: RESTART BUTTON ---
+                int btnY1 = menuY + 160; 
+
+                 g.setColor(new Color(80, 20, 20));
+                g.fillRoundRect(btnX, btnY1, btnW, btnH, 10, 10);
+                g.setColor(Color.YELLOW);
+                g.drawRoundRect(btnX, btnY1, btnW, btnH, 10, 10);
+
+                // Text for Restart
+                g.setColor(Color.YELLOW);
+                g.setFont(new Font("Arial", Font.BOLD, 16));
+                g.drawString("PREMI 'R' PER RICOMINCIARE", btnX + 18, btnY1 + 28);
+                int btnY2 = btnY1 + 65; 
+
+                g.setColor(new Color(80, 20, 20));
+                g.fillRoundRect(btnX, btnY2, btnW+5, btnH, 10, 10);
+                g.setColor(Color.YELLOW);
+                g.drawRoundRect(btnX, btnY2, btnW+5, btnH, 10, 10);
+                
+                g.setFont(new Font("Arial", Font.BOLD, 16));
+                g.setColor(Color.RED);
+                g.drawString("PREMI 'X' PER USCIRE DAL GIOCO", btnX , btnY2 + 35);
+
+            }
+            
+         
         g.dispose();
         bs.show();
     }
@@ -338,6 +405,6 @@ crate_tex = loader.loadImage("/object/crate.png");
             e.printStackTrace();
         }
     }
-
+    
     
 }
