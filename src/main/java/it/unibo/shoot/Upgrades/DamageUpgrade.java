@@ -9,5 +9,6 @@ public class DamageUpgrade extends Upgrade {
     @Override
     protected void executeUpgradeLogic(Player p) {
          p.setDamageMultiplier(p.getDamageMultiplier() * 1.15); 
+         
     }
 }
