@@ -2,8 +2,10 @@ package it.unibo.shoot.view;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import javax.swing.JPanel;
+import it.unibo.shoot.util.Constants;
 
 /**
  * Subclass of JPanel, it works as a game screen.
@@ -66,5 +68,5 @@ public class GamePanel extends JPanel {
     // -------- Setters --------
 
     // I dont think setters are necessary...
-
+    
 }

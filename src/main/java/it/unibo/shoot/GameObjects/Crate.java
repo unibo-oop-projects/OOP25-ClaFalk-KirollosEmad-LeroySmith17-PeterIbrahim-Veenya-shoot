@@ -1,6 +1,5 @@
 package it.unibo.shoot.GameObjects;
 
-import it.unibo.shoot.loader.SpriteSheet;
 import it.unibo.shoot.model.ID;
 import it.unibo.shoot.util.Constants; // Added import to use TILE_SIZE dynamically
 import java.awt.Graphics;

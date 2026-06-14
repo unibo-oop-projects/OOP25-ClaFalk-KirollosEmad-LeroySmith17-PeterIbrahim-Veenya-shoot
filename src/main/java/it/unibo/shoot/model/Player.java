@@ -23,7 +23,7 @@ public class Player extends GameObject {
         
         this.model = new PlayerModel(x, y, 5.0, 100); 
         this.view = new PlayerView(model, ss); 
-        this.controller = new PlayerController(model, handler);
+        this.controller = new PlayerController(model, game);
         this.game=game;
 
         canvas.addKeyListener(controller);
