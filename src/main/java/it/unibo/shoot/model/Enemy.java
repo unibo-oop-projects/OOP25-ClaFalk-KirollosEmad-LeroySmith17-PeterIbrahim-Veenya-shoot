@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import it.unibo.shoot.loader.SpriteSheet;
 import it.unibo.shoot.GameObjects.GameObject;
+import it.unibo.shoot.model.Handler;
 import it.unibo.shoot.GameObjects.Bullet;
 
 public class Enemy extends GameObject{
