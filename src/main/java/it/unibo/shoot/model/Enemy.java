@@ -2,15 +2,15 @@ package it.unibo.shoot.model;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import it.unibo.shoot.loader.SpriteSheet;
-import it.unibo.shoot.GameObjects.GameObject;
-import it.unibo.shoot.model.Handler;
+
 import it.unibo.shoot.GameObjects.Bullet;
+import it.unibo.shoot.GameObjects.GameObject;
+import it.unibo.shoot.loader.SpriteSheet;
 
 public class Enemy extends GameObject{
 
-    private Handler handler;       
-    private LevelManager levelManager;                       
+    private LevelManager levelManager;
+    protected Handler handler;
     protected float speed;                                  //velocita nemico
     protected int hp;                                       //vita del nemico
     protected BufferedImage enemy_ss;
@@ -32,7 +32,7 @@ public class Enemy extends GameObject{
         this.levelManager = levelManager;
     }
 
-
+    @Override
     public void tick()  {
 
         boolean collision = false;
@@ -95,7 +95,8 @@ public class Enemy extends GameObject{
                 if(levelManager != null){
                     levelManager.addXP(xpValue);
                 }
-                 handler.removeObject(this);                                    //rimuove il nemico eliminato
+                onDeath();
+                handler.removeObject(this);                                    //rimuove il nemico eliminato
             }
             
 
@@ -122,6 +123,8 @@ public class Enemy extends GameObject{
 
     }
 
+
+    @Override
     public void render(Graphics g) {
         int row;
         switch (dir) {                                                             //switch per cambiare il "verso" del nemico in base a dove guarda
@@ -137,18 +140,22 @@ public class Enemy extends GameObject{
             default:
                 row = 3;
                 break;
-        };
+        }
 
         enemy_ss = ss.grabImage(COL_OFFSET + frame, row, 16, 16);
         g.drawImage(enemy_ss, x, y, 32, 32, null);     //prende lo spritesheet del nemico
     }
 
+    @Override
     public Rectangle getBounds() {                                              //hitbox del nemico
         return new Rectangle(x, y, 32, 32);
     }
 
     public Rectangle getBoundsBig() {                                           //"area" di collisione del nemico per non finire nel muro
         return new Rectangle(x-4, y-4, 40, 40);
+    }
+
+    protected void onDeath() {
     }
 
 }

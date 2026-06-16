@@ -7,13 +7,16 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import it.unibo.shoot.Upgrades.*;
-import it.unibo.shoot.view.Window;
+
+import it.unibo.shoot.GameObjects.Block;
+import it.unibo.shoot.GameObjects.Crate;
+import it.unibo.shoot.Upgrades.Upgrade;
 import it.unibo.shoot.controller.MouseInput;
-import it.unibo.shoot.loader.*;  
-import it.unibo.shoot.GameObjects.*;
-import it.unibo.shoot.view.Camera;
+import it.unibo.shoot.loader.BufferedImageLoader;
+import it.unibo.shoot.loader.SpriteSheet;
 import it.unibo.shoot.util.Constants;
+import it.unibo.shoot.view.Camera;
+import it.unibo.shoot.view.Window;
 
 public class Game extends Canvas implements Runnable {
     
@@ -23,6 +26,7 @@ public class Game extends Canvas implements Runnable {
     private Handler handler;
     private Camera camera;
     private Spawner spawner;
+    private BossSpawner bossSpawner;
     private Player player;
     private LevelManager levelManager;
     public static java.util.List<it.unibo.shoot.Upgrades.Upgrade> currentUpgradeOptions = new java.util.ArrayList<>();
@@ -67,6 +71,8 @@ crate_tex = loader.loadImage("/object/crate.png");
         levelManager.setPlayer(player);
         //LevelManager levelManager = new LevelManager(player);
         spawner = new Spawner(handler, enemy_ss, level, levelManager);
+        bossSpawner = new BossSpawner(handler, enemy_ss, crate_tex, levelManager);
+
 
         // 4. Crea la finestra
         new Window(width, height, title, this);
@@ -96,6 +102,7 @@ crate_tex = loader.loadImage("/object/crate.png");
     
     // 6. CRITICAL FIX: Re-instantiate the Spawner so it tracks the NEW levelManager and enemy configurations
     this.spawner = new Spawner(handler, enemy_ss, level, levelManager);
+    this.bossSpawner = new BossSpawner(handler, enemy_ss, crate_tex, levelManager);
     
     // 7. Reset the game state back to active game tracking
     Game.gameState = STATE.GAME;
@@ -134,7 +141,10 @@ crate_tex = loader.loadImage("/object/crate.png");
         if (spawner != null) {
                 spawner.tick();
             }
-            if(handler.getPlayer() != null){
+        if (bossSpawner != null) {
+                bossSpawner.tick();
+            }
+        if (handler.getPlayer() != null){
               camera.tick((Player) handler.getPlayer()); // Supponendo che tu passi il player alla camera
             }
          

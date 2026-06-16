@@ -9,6 +9,6 @@ public class Enemy2 extends Enemy{
         this.COL_OFFSET = 3;                                                //offset necessario per avere i giusti sprite nelle animazioni
         this.hp = 200;
         this.damage = 25;
-        this.xpValue = 20; // Gives 10 XP on death
+        this.xpValue = 20; // 20 xp alla morte
     }
 }
