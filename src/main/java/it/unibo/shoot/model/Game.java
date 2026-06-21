@@ -44,7 +44,7 @@ public class Game extends Canvas implements Runnable {
     int height = Constants.SCREEN_HEIGHT;
     String title = Constants.TITLE;
     // Impostiamo il MENU come stato iniziale all'avvio del gioco
-public static STATE gameState = STATE.GAME;
+public static STATE gameState = STATE.MENU;
 
     public Game() {
         // 1. Inizializza Handler e Camera
@@ -298,6 +298,23 @@ crate_tex = loader.loadImage("/object/crate.png");
                     g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 16)); // ripristina font
                 }
             }
+
+            else if (gameState == STATE.MENU) {
+                // Sfondo scuro
+                g.setColor(new Color(20, 20, 20));
+                g.fillRect(0, 0, width, height);
+
+                // Titolo
+                g.setColor(Color.YELLOW);
+                g.setFont(new Font("Impact", Font.PLAIN, 60));
+                g.drawString("shOOt", width / 2 - 80, height / 2 - 80);
+
+                // Istruzione
+                g.setColor(Color.WHITE);
+                g.setFont(new Font("Arial", Font.PLAIN, 20));
+                g.drawString("Clicca per iniziare", width / 2 - 80, height / 2 + 20);
+            }
+
         // IMPROVED GAME OVER MENU OVERLAY
             else if (gameState == STATE.GAME_OVER) {
                 // Blur/Dim background simulation
