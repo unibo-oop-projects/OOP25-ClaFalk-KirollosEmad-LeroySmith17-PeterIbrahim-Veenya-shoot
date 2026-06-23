@@ -25,7 +25,7 @@ public class GameRenderer {
     private final Camera camera;
     private final LevelManager levelManager;
     private final Canvas canvas;
-    private final int width  = Constants.SCREEN_WIDTH;
+    private final int width = Constants.SCREEN_WIDTH;
     private final int height = Constants.SCREEN_HEIGHT;
 
     /**
@@ -102,12 +102,12 @@ public class GameRenderer {
         Player p = (Player) handler.getPlayer();
         if (p == null) return;
 
-        int hp    = p.getHealth();
+        int hp = p.getHealth();
         int maxHp = p.getMaxHealth();
         if (maxHp <= 0) return;
 
         int currentXP = levelManager.getCurrentXP();
-        int barWidth  = 200;
+        int barWidth = 200;
         int barHeight = 20;
 
         // HP bar
