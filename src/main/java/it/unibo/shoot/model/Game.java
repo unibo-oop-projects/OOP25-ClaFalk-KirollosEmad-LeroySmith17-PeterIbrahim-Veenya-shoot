@@ -34,12 +34,13 @@ public class Game extends Canvas implements Runnable {
     private SpriteSheet tile_ss;
     private SpriteSheet player_ss;
     private SpriteSheet enemy_ss;
-
+    
     private BufferedImage level = null;
     private BufferedImage floor = null;
     private BufferedImage block = null;
     private BufferedImage crate_tex = null;
     public int ammo = 50 ;
+    public static long levelUpTime = 0;
     int width = Constants.SCREEN_WIDTH;
     int height = Constants.SCREEN_HEIGHT;
     String title = Constants.TITLE;
@@ -238,7 +239,20 @@ crate_tex = loader.loadImage("/object/crate.png");
                     
                     g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 12));
                     g.drawString("AMMO: " + ammo, AMMOx + 15, AMMOy + 14); // Stampa "AMMO: 50"
-
+                    
+                    int LVLx = AMMOx + 100; // Posizionato subito dopo il riquadro delle munizioni
+                    int LVLy = 0;
+            
+                     // Sfondo scuro per il livello
+                    g.setColor(new Color(30, 30, 30, 200));
+                    g.fillRoundRect(LVLx, LVLy, 80, barHeight, 5, 5);
+                    g.setColor(Color.BLACK);
+                    g.drawRoundRect(LVLx, LVLy, 80, barHeight, 5, 5);
+            
+                    // Colore Giallo dorato per il livello
+                    g.setColor(Color.YELLOW);
+                    g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 12));
+                    g.drawString("LVL: " + levelManager.getCurrentLevel(), LVLx + 15, LVLy + 14);
                 }
             }
         }
