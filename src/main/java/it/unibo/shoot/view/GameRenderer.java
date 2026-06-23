@@ -45,6 +45,7 @@ public class GameRenderer {
 
     /**
      * Renders the current frame based on the active game state.
+     * Handles world rendering, HUD, and overlays depending on STATE.
      *
      * @param gameState the current game state.
      * @param ammo the current ammo count to display in the HUD.
@@ -80,12 +81,23 @@ public class GameRenderer {
         bs.show();
     }
 
+    /**
+     * Renders all game objects applying camera translation.
+     *
+     * @param g the Graphics context.
+     */
     private void renderWorld(Graphics g) {
         g.translate((int) -camera.getX(), (int) -camera.getY());
         handler.render(g);
         g.translate((int) camera.getX(), (int) camera.getY());
     }
 
+    /**
+     * Renders the heads-up display (HP bar, EXP bar, and ammo counter).
+     *
+     * @param g the Graphics context.
+     * @param ammo current ammo count.
+     */
     private void renderHUD(Graphics g, int ammo) {
         Player p = (Player) handler.getPlayer();
         if (p == null) return;
@@ -129,6 +141,12 @@ public class GameRenderer {
         g.drawString("AMMO: " + ammo, AMMOx + 15, AMMOy + 14);
     }
 
+    /**
+     * Renders the level-up selection screen with upgrade cards.
+     *
+     * @param g the Graphics context.
+     * @param options available upgrades to choose from.
+     */
     private void renderLevelUpOverlay(Graphics g, List<Upgrade> options) {
         g.setColor(new Color(0, 0, 0, 150));
         g.fillRect(0, 0, width, height);
@@ -170,6 +188,9 @@ public class GameRenderer {
         }
     }
 
+    /**
+     * Renders the main menu screen.
+     */
     private void renderMenu(Graphics g) {
         g.setColor(new Color(20, 20, 20));
         g.fillRect(0, 0, width, height);
@@ -181,6 +202,9 @@ public class GameRenderer {
         g.drawString("Clicca per iniziare", width / 2 - 80, height / 2 + 20);
     }
 
+    /**
+     * Renders the game over screen with restart/exit options.
+     */
     private void renderGameOver(Graphics g) {
         g.setColor(new Color(20, 0, 0, 180));
         g.fillRect(0, 0, width, height);
