@@ -37,9 +37,10 @@ public class LevelManager {
         nextLevelXP = (int) (nextLevelXP * 1.25);
         triggerLevelUpMenu();
     }
-
+    public int getCurrentLevel() {
+        return this.currentLevel;}
     private void triggerLevelUpMenu() {
-    
+    Game.levelUpTime = System.currentTimeMillis();
     // 1. Extract 3 random upgrades
     List<Upgrade> options = getRandomUpgrades(3);
     
