@@ -98,12 +98,17 @@ public class Sound {
     }
 
     public void startBackgroundMusic() {
-        if (backgroundMusic == null) return;
+        if (backgroundMusic == null) {
+            return;
+        }
+
         backgroundMusic.loop(Clip.LOOP_CONTINUOUSLY);
     }
 
     public void stopBackgroundMusic() {
-        if (backgroundMusic == null) return;
+        if (backgroundMusic == null) {
+            return;
+        }
 
         backgroundMusic.stop();
         backgroundMusic.setFramePosition(0);
