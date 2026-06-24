@@ -33,6 +33,7 @@ public class Sound {
      */
     public Sound() {
         loadBackgroundMusic("audio/background_music.wav");
+        
         loadResource(SoundType.SHOOT, "audio/pop_1.wav");
         loadResource(SoundType.LEVEL_UP, "audio/level_up.wav");
         loadResource(SoundType.GAME_OVER, "audio/game_over.wav");
@@ -109,7 +110,6 @@ public class Sound {
         if (backgroundMusic == null) {
             return;
         }
-
         backgroundMusic.stop();
         backgroundMusic.setFramePosition(0);
     }
