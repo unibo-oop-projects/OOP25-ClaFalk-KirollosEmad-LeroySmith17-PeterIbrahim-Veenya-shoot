@@ -41,9 +41,10 @@ public class LevelManager {
         game.getSound().play(Sound.SoundType.LEVEL_UP);
         triggerLevelUpMenu();
     }
-
+    public int getCurrentLevel() {
+        return this.currentLevel;}
     private void triggerLevelUpMenu() {
-    
+    Game.levelUpTime = System.currentTimeMillis();
     // 1. Extract 3 random upgrades
     List<Upgrade> options = getRandomUpgrades(3);
     

@@ -15,6 +15,7 @@ public class Enemy extends GameObject{
     protected float speed;                                  //velocita nemico
     protected int hp;                                       //vita del nemico
     protected BufferedImage enemy_ss;
+    protected int renderSize = 32;
     protected enum Direction {
         UP, DOWN, LEFT, RIGHT
     }
@@ -38,22 +39,10 @@ public class Enemy extends GameObject{
 
         boolean collision = false;
         GameObject player = null;
+        int oldX = x;
+        int oldY = y;
         x += velX;
         y += velY;
-
-        if (x < 0) {
-            x = 0;
-        }
-        if (y < 0) {
-            y = 0;
-        }
-        if (x > Constants.WORLD_WIDTH - 32) {
-            x = Constants.WORLD_WIDTH - 32;
-        }
-        if (y > Constants.WORLD_HEIGHT - 32) {
-            y = Constants.WORLD_HEIGHT - 32;
-        }
-
 
         if (Math.abs(velX) > Math.abs(velY)) {                                  //se la velocita laterale > verticale, controlla se il modello guarda a sinistra o destra
             if (velX > 0) dir = Direction.RIGHT;                                // velX positiva, guarda a DESTRA
@@ -75,25 +64,7 @@ public class Enemy extends GameObject{
             }
         
             if (tempObject.getId() == ID.Block) {
-                if (getBoundsBig().intersects(tempObject.getBounds())){          //se toccano un muro vengono rispediti indietro (non si "infila" nel muro)
-                    x -= velX;
-                    y -= velY;
-                    
-                    x += velX;
-                    if (getBoundsBig().intersects(tempObject.getBounds())) {
-                        x -= velX;
-                    }
-
-                    y += velY;
-                    if (getBoundsBig().intersects(tempObject.getBounds())) {
-                        y -= velY;
-                    }
-
-                    if (getBoundsBig().intersects(tempObject.getBounds())) {
-                        x += (Math.random() > 0.5 ? 1 : -1) *2;
-                        y += (Math.random() > 0.5 ? 1 : -1) *2;
-                    }
-                    
+                if (getBoundsBig().intersects(tempObject.getBounds())){
                     collision = true;
                 }
             }
@@ -105,6 +76,22 @@ public class Enemy extends GameObject{
                 }
             }
         }
+
+            if (collision) {
+                x = oldX;
+                y = oldY;
+                x += velX;
+                if (collidesWithBlock()) {
+                    x = oldX;
+                }
+                y += velY;
+                if (collidesWithBlock()) {
+                    y = oldY;
+                }
+                clampToWorld();
+            }
+
+            clampToWorld();
 
             if (hp <= 0){
                 if(levelManager != null){
@@ -138,6 +125,31 @@ public class Enemy extends GameObject{
 
     }
 
+    private boolean collidesWithBlock() {
+            for (int i = 0; i < handler.object.size(); i++) {
+                GameObject tempObject = handler.object.get(i);
+                if (tempObject.getId() == ID.Block && getBoundsBig().intersects(tempObject.getBounds())) {
+                        return true;
+                }
+            }
+            return false;
+        }
+
+    private void clampToWorld() {
+        if (x < 0) {
+            x = 0; velX = 0;
+        }
+        if (y < 0) {
+            y = 0; velY = 0;
+        }
+        if (x > Constants.WORLD_WIDTH - renderSize) {
+            x = Constants.WORLD_WIDTH - renderSize; velX = 0;
+        }
+        if (y > Constants.WORLD_HEIGHT - renderSize) {
+            y = Constants.WORLD_HEIGHT - renderSize; velY = 0;
+        }
+    }
+
 
     @Override
     public void render(Graphics g) {
@@ -158,7 +170,7 @@ public class Enemy extends GameObject{
         }
 
         enemy_ss = ss.grabImage(COL_OFFSET + frame, row, 16, 16);
-        g.drawImage(enemy_ss, x, y, 32, 32, null);     //prende lo spritesheet del nemico
+        g.drawImage(enemy_ss, x, y, renderSize, renderSize, null);     //prende lo spritesheet del nemico
     }
 
     @Override
@@ -170,7 +182,7 @@ public class Enemy extends GameObject{
         return new Rectangle(x-4, y-4, 40, 40);
     }
 
-    protected void onDeath() {                                                  //viene usata solo dal boss per far spawnare la chest
+    protected void onDeath() {
     }
 
 }

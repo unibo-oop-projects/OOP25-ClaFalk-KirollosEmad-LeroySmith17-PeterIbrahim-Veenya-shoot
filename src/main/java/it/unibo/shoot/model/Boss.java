@@ -17,6 +17,7 @@ public class Boss extends Enemy {
         this.hp = 300;
         this.damage = 40;
         this.xpValue = 100;
+        this.renderSize = 64;
         this.crate_image = crate_image;
         this.bossSpawner = bossSpawner;
     }
@@ -34,6 +35,6 @@ public class Boss extends Enemy {
 
     @Override
     public Rectangle getBoundsBig() {
-        return new Rectangle(x-4, y-4, 72, 72);
+        return new Rectangle(x-4, y-4, 64, 64);
     }
 }
