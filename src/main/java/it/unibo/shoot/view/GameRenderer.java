@@ -38,7 +38,7 @@ public class GameRenderer {
     private final Font fontHUD = new Font("Comic Sans MS", Font.BOLD,   12);
     private final Font fontSmall = new Font("Comic Sans MS", Font.PLAIN,  14);
 
-    // Colori pastello kawaii 🌸
+    // Colors
     private static final Color COL_BG           = new Color(255, 240, 245); // rosa pallido
     private static final Color COL_HP_BG        = new Color(255, 182, 193); // rosa chiaro
     private static final Color COL_HP_FG        = new Color(255, 105, 135); // rosa acceso
@@ -69,10 +69,10 @@ public class GameRenderer {
      * @param canvas       the canvas to draw onto.
      */
     public GameRenderer(Handler handler, Camera camera, LevelManager levelManager, Canvas canvas) {
-        this.handler      = handler;
-        this.camera       = camera;
+        this.handler = handler;
+        this.camera = camera;
         this.levelManager = levelManager;
-        this.canvas       = canvas;
+        this.canvas = canvas;
     }
 
     /**
