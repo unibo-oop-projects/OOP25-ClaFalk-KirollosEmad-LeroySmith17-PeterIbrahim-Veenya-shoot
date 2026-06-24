@@ -120,11 +120,15 @@ public class GameRenderer {
     /** Renders the HUD: HP bar, EXP bar, ammo counter. */
     private void renderHUD(Graphics g, int ammo) {
         Player p = (Player) handler.getPlayer();
-        if (p == null) return;
+        if (p == null) {
+            return;
+        }
 
-        int hp    = p.getHealth();
+        int hp = p.getHealth();
         int maxHp = p.getMaxHealth();
-        if (maxHp <= 0) return;
+        if (maxHp <= 0) {
+            return;
+        }
 
         int currentXP = levelManager.getCurrentXP();
         int barW = 200, barH = 20;
