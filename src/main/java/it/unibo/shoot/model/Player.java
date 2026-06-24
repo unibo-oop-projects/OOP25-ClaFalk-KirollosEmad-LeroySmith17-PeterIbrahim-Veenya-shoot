@@ -33,7 +33,7 @@ public class Player extends GameObject {
     @Override
     public void tick() {
         if (model.isDead()) {
-            Game.gameState = STATE.GAME_OVER;
+            game.setGameState(STATE.GAME_OVER);
             game.getSound().play(Sound.SoundType.GAME_OVER);
             return; // Esce immediatamente, non disegna e non calcola più nulla.
         }

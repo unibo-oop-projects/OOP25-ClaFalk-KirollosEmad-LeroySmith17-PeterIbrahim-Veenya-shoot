@@ -2,6 +2,8 @@ package it.unibo.shoot.controller;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
+
 import it.unibo.shoot.GameObjects.*;
 import it.unibo.shoot.view.Camera;
 import it.unibo.shoot.Upgrades.*;
@@ -26,39 +28,42 @@ public class MouseInput extends MouseAdapter {
         int my = e.getY();
 
         // CASO 1: SE IL GIOCO È IN STATO LEVEL_UP, INTERCETTA I CLICK SUL MENU
-        if (Game.gameState == STATE.LEVEL_UP) {
-            for (int i = 0; i < Game.currentUpgradeOptions.size(); i++) {
-                int cardX = 120 + (i * 260);
-                int cardY = 180;
-                int cardW = 220;
-                int cardH = 250;
+        if (game.getGameState() == STATE.LEVEL_UP) {
 
-                // Controlla se il click del mouse è dentro il perimetro rettangolare della carta
-                if (mx >= cardX && mx <= cardX + cardW && my >= cardY && my <= cardY + cardH) {
-                    Upgrade selected = Game.currentUpgradeOptions.get(i);
-                    
-                    // Recupera il giocatore dall'handler ed applica il bonus
-                    Player player = (Player) handler.getPlayer();
-                    if (player != null) {
-                        selected.apply(player);
-                    }
+        List<Upgrade> options = game.getUpgradeOptions();
 
-                    // Pulisci le opzioni e torna a combattere!
-                    Game.currentUpgradeOptions.clear();
-                    Game.gameState = STATE.GAME;
-                    break;
+        for (int i = 0; i < options.size(); i++) {
+
+            int cardX = 120 + (i * 260);
+            int cardY = 180;
+            int cardW = 220;
+            int cardH = 250;
+
+            if (mx >= cardX && mx <= cardX + cardW &&
+                my >= cardY && my <= cardY + cardH) {
+
+                Upgrade selected = options.get(i);
+
+                Player player = (Player) handler.getPlayer();
+                if (player != null) {
+                    selected.apply(player);
                 }
+
+                options.clear();
+                game.setGameState(STATE.GAME);
+                return;
             }
-            return; // Blocca la propagazione così il giocatore non spara mentre sceglie
-        }
+    }
+    return;
+}
         
         
-        if (Game.gameState == STATE.MENU) {
-            Game.gameState = STATE.GAME; // Cambia stato e avvia l'azione!
+        if (game.getGameState() == STATE.MENU) {
+            game.setGameState(STATE.GAME); // Cambia stato e avvia l'azione!
             return; // Ferma il codices q
         }
 
-        if (Game.gameState != STATE.GAME) {
+        if (game.getGameState() != STATE.GAME) {
             return;
         }
 

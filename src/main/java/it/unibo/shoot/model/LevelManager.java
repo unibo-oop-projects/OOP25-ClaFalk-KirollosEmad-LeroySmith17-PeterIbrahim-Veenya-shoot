@@ -12,7 +12,7 @@ public class LevelManager {
     private int nextLevelXP = 100;
     
     private List<Upgrade> availableUpgrades;
-    public static List<Upgrade> currentUpgradeOptions = new ArrayList<>();
+    private List<Upgrade> currentUpgradeOptions = new ArrayList<>();
     private Player player;
     Game game;
 
@@ -38,7 +38,7 @@ public class LevelManager {
         currentXP -= nextLevelXP;
         currentLevel++;
         nextLevelXP = (int) (nextLevelXP * 1.25);
-        //game.getSound().play(Sound.SoundType.LEVEL_UP);
+        game.getSound().play(Sound.SoundType.LEVEL_UP);
         triggerLevelUpMenu();
     }
 
@@ -49,15 +49,16 @@ public class LevelManager {
     
     if (options.isEmpty()) {
         System.out.println("Tutti gli upgrade sono già al massimo!");
-        Game.gameState = STATE.GAME;
+        game.setGameState(STATE.GAME);
         return;
     }
 
     // 2. Passa le opzioni estratte alla classe Game per renderizzarle a schermo
-        Game.currentUpgradeOptions = options;
+        //Game.currentUpgradeOptions = options;
+        game.setUpgradeOptions(options);
         
         // 3. Cambia lo stato per congelare la fisica di nemici/spawner ed aprire il menu overlay
-        Game.gameState = STATE.LEVEL_UP;
+        game.setGameState(STATE.LEVEL_UP);
 }
 
     public List<Upgrade> getRandomUpgrades(int count) {
@@ -80,4 +81,5 @@ public class LevelManager {
     public int getNextLevelXP() {
         return this.nextLevelXP;
     }
+
 }

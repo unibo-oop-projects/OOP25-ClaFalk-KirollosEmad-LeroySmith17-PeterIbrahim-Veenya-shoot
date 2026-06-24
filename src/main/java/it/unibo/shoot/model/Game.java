@@ -23,8 +23,8 @@ import it.unibo.shoot.audio.Sound;
  */
 public class Game extends Canvas implements Runnable {
 
-    public static STATE gameState = STATE.MENU;
-    public static List<Upgrade> currentUpgradeOptions = new ArrayList<>();
+    private STATE gameState = STATE.MENU;
+    private List<Upgrade> currentUpgradeOptions = new ArrayList<>();
 
     public int ammo = 50;
 
@@ -83,7 +83,7 @@ public class Game extends Canvas implements Runnable {
         spawner = new Spawner(handler, resources.getEnemySS(), resources.getLevelImage(), freshLevelManager);
         bossSpawner = new BossSpawner(handler, resources.getEnemySS(), resources.getCrateImage(), freshLevelManager);
 
-        Game.gameState = STATE.GAME;
+        this.setGameState(STATE.GAME);
     }
 
     /**
@@ -109,7 +109,7 @@ public class Game extends Canvas implements Runnable {
                 delta--;
             }
 
-            renderer.render(gameState, ammo, currentUpgradeOptions);
+            renderer.render(getGameState(), ammo, currentUpgradeOptions);
             //frames++;
 
             if (System.currentTimeMillis() - timer > 1000) {
@@ -155,6 +155,22 @@ public class Game extends Canvas implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setGameState(STATE state) {
+        this.gameState = state;
+    }
+
+    public STATE getGameState() {
+        return this.gameState;
+    }
+
+    public void setUpgradeOptions(List<Upgrade> options) {
+        this.currentUpgradeOptions = new ArrayList<>(options);
+    }
+
+    public List<Upgrade> getUpgradeOptions() {
+        return currentUpgradeOptions;
     }
 
     
