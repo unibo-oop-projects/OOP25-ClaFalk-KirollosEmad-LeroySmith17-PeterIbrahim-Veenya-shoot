@@ -133,7 +133,6 @@ public class Game extends Canvas implements Runnable {
                 camera.tick((Player) handler.getPlayer());
             }
         }
-        // MENU, GAME_OVER, LEVEL_UP: physics frozen
     }
 
     /**
@@ -164,6 +163,12 @@ public class Game extends Canvas implements Runnable {
      */
     public void setGameState(STATE state) {
         this.gameState = state;
+
+        if (state==STATE.GAME_OVER) {
+            sound.stopBackgroundMusic();
+        } else {
+            sound.startBackgroundMusic();
+        }
     }
 
     /**

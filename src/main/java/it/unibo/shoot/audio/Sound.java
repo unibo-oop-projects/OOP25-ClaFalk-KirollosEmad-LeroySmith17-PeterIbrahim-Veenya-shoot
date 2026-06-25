@@ -26,11 +26,14 @@ public class Sound {
     }
 
     private final Map<SoundType, URL> sounds = new HashMap<>();
+    private Clip backgroundMusic;
 
     /**
      * Constructs a Sound instance and loads all audio resources from the classpath.
      */
     public Sound() {
+        loadBackgroundMusic("audio/background_music.wav");
+        
         loadResource(SoundType.SHOOT, "audio/pop_1.wav");
         loadResource(SoundType.LEVEL_UP, "audio/level_up.wav");
         loadResource(SoundType.GAME_OVER, "audio/game_over.wav");
@@ -75,5 +78,39 @@ public class Sound {
             return;
         }
         sounds.put(type, url);
+    }
+
+    /**
+     * Loads the background music in loop.
+     * 
+     * @param path of the song to reproduce.
+     */
+    private void loadBackgroundMusic(String path) {
+        try {
+            URL url = getClass().getClassLoader().getResource(path);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+
+            backgroundMusic = AudioSystem.getClip();
+            backgroundMusic.open(audioIn);
+
+        } catch (Exception e) {
+            System.err.println("Errore caricamento BGM: " + e.getMessage());
+        }
+    }
+
+    public void startBackgroundMusic() {
+        if (backgroundMusic == null) {
+            return;
+        }
+
+        backgroundMusic.loop(Clip.LOOP_CONTINUOUSLY);
+    }
+
+    public void stopBackgroundMusic() {
+        if (backgroundMusic == null) {
+            return;
+        }
+        backgroundMusic.stop();
+        backgroundMusic.setFramePosition(0);
     }
 }

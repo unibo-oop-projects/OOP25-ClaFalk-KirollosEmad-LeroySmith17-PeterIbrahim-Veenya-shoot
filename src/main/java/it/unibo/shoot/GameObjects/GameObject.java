@@ -5,8 +5,6 @@ import java.awt.Rectangle;
 
 import it.unibo.shoot.loader.SpriteSheet;
 import it.unibo.shoot.model.ID;
-// Class needs to be abstract because it is a blueprint for other classes
-// and cannot be instantiated directly.
 
 /**
  * Base class for each object present in the game, every object derives from this.
@@ -17,11 +15,14 @@ public abstract class GameObject {
 
     /** (x, y) position of object. */
     protected int x, y; 
+
     /** Speed of object in pixels per tick. */
     protected float velX = 0, velY = 0;
-    /**ID of object type. */
+
+    /** ID of object type. */
     protected ID id;
-    /**Layer where object will be rendered */
+
+    /** Layer where object will be rendered */
     protected int layer;
 
     protected SpriteSheet ss;
@@ -38,8 +39,6 @@ public abstract class GameObject {
         this.id = id;
         this.ss = ss;
     }
-
-    // Methods every object has in common
 
     /** 
      * Updates object state each game tick 
