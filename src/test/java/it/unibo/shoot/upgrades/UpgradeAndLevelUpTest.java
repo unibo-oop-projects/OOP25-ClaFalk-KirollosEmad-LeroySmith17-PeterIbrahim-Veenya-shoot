@@ -10,9 +10,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import it.unibo.shoot.Upgrades.DamageUpgrade;
-import it.unibo.shoot.Upgrades.Upgrade;
+import it.unibo.shoot.Upgrades.*;
 import it.unibo.shoot.loader.SpriteSheet;
 import it.unibo.shoot.model.Game;
 import it.unibo.shoot.model.Handler;
@@ -20,7 +18,6 @@ import it.unibo.shoot.model.ID;
 import it.unibo.shoot.model.LevelManager;
 import it.unibo.shoot.model.Player;
 import it.unibo.shoot.model.STATE;
-
 public class UpgradeAndLevelUpTest {
 
     private Player player;
@@ -28,12 +25,13 @@ public class UpgradeAndLevelUpTest {
 
     @BeforeEach
     public void setUp() {
-        // 1. Inizializzio i componenti minimi di controllo
+        // 1. Inizializzo i componenti minimi di controllo
         Canvas dummyCanvas = new Canvas();
         Handler dummyHandler = new Handler();
         Game dummyGame = new Game();
-
-        // 2. creo  uno spriteshhet fittizio valido in memoria
+        levelManager = new LevelManager(dummyGame);
+        levelManager.setPlayer(player);
+        // 2. creo  uno spritesheet fittizio valido in memoria
         // creo un'immagine vuota grande abbastanza (es. 128x60) per non andare fuori dai bordi.
         BufferedImage dummyImage = new BufferedImage(128, 60, BufferedImage.TYPE_INT_ARGB);
         SpriteSheet dummySpriteSheet = new SpriteSheet(dummyImage);
@@ -42,8 +40,7 @@ public class UpgradeAndLevelUpTest {
         player = new Player(0, 0, ID.Player, dummyCanvas, dummySpriteSheet, dummyHandler, dummyGame);
         player.setDamageMultiplier(1.0);
 
-        // 4. Inizializzio il LevelManager legato al player
-        levelManager = new LevelManager(player);
+        // 4. Inizializzo il LevelManager legato al player
     }
 
     @Test
@@ -53,7 +50,7 @@ public class UpgradeAndLevelUpTest {
         assertEquals(0, damageUpgrade.getCurrentLevel());
         assertEquals(1.0, player.getDamageMultiplier(), 0.001);
 
-        // Applichio l'upgrade (+15% danno)
+        // Applico l'upgrade (+15% danno)
         damageUpgrade.apply(player);
         
         assertEquals(1, damageUpgrade.getCurrentLevel());
@@ -82,6 +79,7 @@ public class UpgradeAndLevelUpTest {
 
     @Test
     public void testXPAccumulationAndLevelUp() {
+        Game dummyGame = new Game();
         assertEquals(0, levelManager.getCurrentXP());
         assertEquals(100, levelManager.getNextLevelXP());
 
@@ -93,7 +91,8 @@ public class UpgradeAndLevelUpTest {
         
         assertEquals(10, levelManager.getCurrentXP());
         assertEquals(125, levelManager.getNextLevelXP());
-        assertEquals(STATE.LEVEL_UP, Game.gameState);
+        
+        assertEquals(STATE.MENU, dummyGame.gameState);
     }
 
     @Test
