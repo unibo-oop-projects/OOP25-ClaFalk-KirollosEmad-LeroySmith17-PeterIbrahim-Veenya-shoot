@@ -25,18 +25,25 @@ public class MouseInput extends MouseAdapter {
     @Override
     public void mousePressed(MouseEvent e) {
     
-        // Se sono passati MENO di 2000 millisecondi (2 secondi), ignora il click!
-        //if (currentTime - Game.levelUpTime < 2000) {
-        //return; 
-        //}
-
+        // Se sono passati MENO di 2000 millisecondi (2 secondi), ignora il click
+        
 
         int mx = e.getX();
         int my = e.getY();
 
         // CASO 1: SE IL GIOCO È IN STATO LEVEL_UP, INTERCETTA I CLICK SUL MENU
         if (game.getGameState() == STATE.LEVEL_UP) {
-
+        
+    
+        // 1. Recupera il tempo in cui è apparso il menu
+        long tempoInizioMenu = game.getLevelManager().getLastLevelUpTime(); 
+        long tempoCorrente = System.currentTimeMillis();
+    
+        // 2. Se sono passati meno di 2000 millisecondi (2 secondi), blocca il clic
+        if (tempoCorrente - tempoInizioMenu < 2000) {
+        System.out.println("Clic bloccato! Aspetta che finisca il cooldown.");
+        return; // Esce dal metodo e ignora il clic sul menu
+        }
         List<Upgrade> options = game.getUpgradeOptions();
 
         for (int i = 0; i < options.size(); i++) {
