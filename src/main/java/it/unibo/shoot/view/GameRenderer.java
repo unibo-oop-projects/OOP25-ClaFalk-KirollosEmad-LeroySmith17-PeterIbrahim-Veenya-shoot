@@ -294,8 +294,8 @@ public class GameRenderer {
         // Bottoni
         int btnW = 320, btnH = 50;
         int btnX = menuX + (menuW - btnW) / 2;
-        drawButton(g, btnX, menuY + 190, btnW, btnH, "premi  'R'  per ricominciare ♡", COL_TITLE);
-        drawButton(g, btnX, menuY + 260, btnW, btnH, "premi  'X'  per uscire  ✕",      new Color(255, 120, 120));
+        drawButton(g, btnX, menuY + 190, btnW, btnH, "premi  'R'  per ricominciare", COL_TITLE);
+        drawButton(g, btnX, menuY + 260, btnW, btnH, "premi  'X'  per uscire",      new Color(255, 120, 120));
     }
 
     /** Draws a styled button with centered text. */
