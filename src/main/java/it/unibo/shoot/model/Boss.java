@@ -35,6 +35,6 @@ public class Boss extends Enemy {
 
     @Override
     public Rectangle getBoundsBig() {
-        return new Rectangle(x-4, y-4, 64, 64);
+        return new Rectangle(x-4, y-4, 72, 72);
     }
 }
