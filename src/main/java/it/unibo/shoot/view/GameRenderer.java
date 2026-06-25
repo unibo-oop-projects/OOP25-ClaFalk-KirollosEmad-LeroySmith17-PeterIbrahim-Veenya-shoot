@@ -156,25 +156,25 @@ public class GameRenderer {
         int currentXP = levelManager.getCurrentXP();
         int barW = 200, barH = 20;
 
-        // HP bar 🩷
+        // HP bar
         int hpFill = (int) (((double) hp / maxHp) * barW);
-        g.setColor(COL_HP_BG);  g.fillRoundRect(0, 0, barW, barH, 10, 10);
-        g.setColor(COL_HP_FG);  g.fillRoundRect(0, 0, hpFill, barH, 10, 10);
+        g.setColor(COL_HP_BG); g.fillRoundRect(0, 0, barW, barH, 10, 10);
+        g.setColor(COL_HP_FG); g.fillRoundRect(0, 0, hpFill, barH, 10, 10);
         g.setColor(Color.WHITE); g.drawRoundRect(0, 0, barW, barH, 10, 10);
         g.setFont(fontHUD);
         g.setColor(Color.WHITE);
-        g.drawString("♥ " + hp + " / " + maxHp, 6, 14);
+        g.drawString(hp + " / " + maxHp, 6, 14);
 
-        // EXP bar 💜
+        // EXP bar
         int expX = width - barW - 10;
         int expFill = (int) (((double) currentXP / levelManager.getNextLevelXP()) * barW);
         g.setColor(COL_EXP_BG);  g.fillRoundRect(expX, 0, barW, barH, 10, 10);
         g.setColor(COL_EXP_FG);  g.fillRoundRect(expX, 0, expFill, barH, 10, 10);
         g.setColor(Color.WHITE);  g.drawRoundRect(expX, 0, barW, barH, 10, 10);
         g.setColor(Color.WHITE);
-        g.drawString("★ " + currentXP + " / " + levelManager.getNextLevelXP(), expX + 6, 14);
+        g.drawString(currentXP + " / " + levelManager.getNextLevelXP(), expX + 6, 14);
 
-        // Ammo counter 🌸
+        // Ammo counter
         int ammoX = (width / 2) - 50;
         g.setColor(COL_AMMO_BG);  g.fillRoundRect(ammoX, 0, 100, barH, 10, 10);
         g.setColor(ammo <= 10 ? COL_AMMO_LOW : COL_AMMO_OK);
@@ -194,13 +194,13 @@ public class GameRenderer {
         // Titolo
         g.setColor(COL_TITLE);
         g.setFont(fontOverlayBig);
-        String title = "✨ scegli un upgrade! ✨";
+        String title = "scegli un upgrade!";
         g.drawString(title, (width - g.getFontMetrics().stringWidth(title)) / 2, 76);
 
         // Sottotitolo
         g.setColor(COL_SUBTITLE);
         g.setFont(fontSmall);
-        String sub = "clicca su una carta per potenziare il tuo eroe ~";
+        String sub = "clicca su una carta per potenziare il tuo eroe";
         g.drawString(sub, (width - g.getFontMetrics().stringWidth(sub)) / 2, 106);
 
         // Carte
@@ -253,7 +253,7 @@ public class GameRenderer {
         // Titolo
         g.setColor(COL_TITLE);
         g.setFont(fontTitle);
-        String t = "shOOt ♡";
+        String t = "shOOt";
         g.drawString(t, (width - g.getFontMetrics().stringWidth(t)) / 2, height / 2 - 50);
 
         // Sottotitolo
@@ -282,13 +282,13 @@ public class GameRenderer {
         // Titolo
         g.setColor(COL_DEAD);
         g.setFont(fontGameOver);
-        String dead = "sei morto... (◞‸◟)";
+        String dead = "sei morto...";
         g.drawString(dead, menuX + (menuW - g.getFontMetrics().stringWidth(dead)) / 2, menuY + 90);
 
         // Sottotitolo
         g.setColor(COL_SUBTITLE);
         g.setFont(fontSmall);
-        String sub = "il tuo viaggio si è concluso qui nell'arena ~";
+        String sub = "il tuo viaggio si è concluso qui nell'arena";
         g.drawString(sub, menuX + (menuW - g.getFontMetrics().stringWidth(sub)) / 2, menuY + 130);
 
         // Bottoni
