@@ -1,7 +1,7 @@
 package it.unibo.shoot.view;
 
-import it.unibo.shoot.model.GameObject;
 import it.unibo.shoot.util.Constants;
+import it.unibo.shoot.GameObjects.GameObject;
 
 
 
@@ -39,12 +39,6 @@ public class Camera {
             x = Constants.WORLD_WIDTH - Constants.SCREEN_WIDTH;
         if (y > Constants.WORLD_HEIGHT - Constants.SCREEN_HEIGHT)
             y = Constants.WORLD_HEIGHT - Constants.SCREEN_HEIGHT;
-        
-        // Alternative (smoother)
-        /*
-        x += ((object.getX() - x) - 1000/2 * 0.05f);
-        y += ((object.getY() - y) - 563/2 * 0.05f);
-        */
     }
 
     // -------- Getters --------

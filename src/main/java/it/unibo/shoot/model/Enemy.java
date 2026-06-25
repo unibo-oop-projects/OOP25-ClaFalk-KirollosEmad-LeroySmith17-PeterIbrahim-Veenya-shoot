@@ -2,25 +2,27 @@ package it.unibo.shoot.model;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import it.unibo.shoot.model.ID;
-import it.unibo.shoot.loader.SpriteSheet;
+
+import it.unibo.shoot.GameObjects.Bullet;
 import it.unibo.shoot.GameObjects.GameObject;
-import it.unibo.shoot.model.Handler;
+import it.unibo.shoot.loader.SpriteSheet;
+import it.unibo.shoot.util.Constants;
+
 public class Enemy extends GameObject{
 
-    private Handler handler;       
-    private LevelManager levelManager;
-    int choose = 0;                                         //scelta del movimento nemico                                
+    final private LevelManager levelManager;
+    protected Handler handler;
     protected float speed;                                  //velocita nemico
     protected int hp;                                       //vita del nemico
     protected BufferedImage enemy_ss;
+    protected int renderSize = 32;
     protected enum Direction {
         UP, DOWN, LEFT, RIGHT
     }
     protected Direction dir = Direction.DOWN;
     protected int frame = 0;
     protected int frameDelay = 0;
-    protected int COL_OFFSET = 0; // ogni sottoclasse può sovrascrivere
+    protected int COL_OFFSET = 0;
     protected int damage = 10;
     protected int xpValue = 10;
 
@@ -32,11 +34,13 @@ public class Enemy extends GameObject{
         this.levelManager = levelManager;
     }
 
-
+    @Override
     public void tick()  {
 
         boolean collision = false;
         GameObject player = null;
+        int oldX = x;
+        int oldY = y;
         x += velX;
         y += velY;
 
@@ -60,39 +64,52 @@ public class Enemy extends GameObject{
             }
         
             if (tempObject.getId() == ID.Block) {
-                if (getBoundsBig().intersects(tempObject.getBounds())){          //se toccano un muro vengono rispediti indietro (non si "infila" nel muro)
-                    x += (velX*3) * -1;
-                    y += (velY*3) * -1;
-                    velX *= -1;
-                    velY *= -1;
+                if (getBoundsBig().intersects(tempObject.getBounds())){
                     collision = true;
                 }
             }
 
-            if (tempObject.getId() == ID.Bullet) {                              //controlla se il nemico è colpito da un proiettile
+            if (tempObject.getId() == ID.Bullet) {                              //controlla se il nemico viene colpito da un proiettile
                 if (getBounds().intersects(tempObject.getBounds())){
-                    hp -= 50;
+                    hp -= ((Bullet) tempObject).getDamage();                               //se colpito, perde hp in base al danno del proiettile
                     handler.removeObject(tempObject);
                 }
             }
         }
 
+            if (collision) {
+                x = oldX;
+                y = oldY;
+                x += velX;
+                if (collidesWithBlock()) {
+                    x = oldX;
+                }
+                y += velY;
+                if (collidesWithBlock()) {
+                    y = oldY;
+                }
+                clampToWorld();
+            }
+
+            clampToWorld();
+
             if (hp <= 0){
                 if(levelManager != null){
                     levelManager.addXP(xpValue);
                 }
-                 handler.removeObject(this);                                    //rimuove il nemico eliminato
+                onDeath();
+                handler.removeObject(this);                                    //rimuove il nemico eliminato
             }
             
 
-        if (player != null && !collision) {                                      //se non collide con un muro, si avvicina al player
+        if (player != null) {
             float diffX = player.getX() - x;
             float diffY = player.getY() - y;
 
             float distance = (float)Math.sqrt((diffX * diffX) + (diffY * diffY));
 
             if (distance !=0) {
-                velX = (diffX / distance) * speed;
+                velX = (diffX / distance) * speed;                                //si avvicina verso il player a velocita costante
                 velY = (diffY / distance) * speed;
             }
         }
@@ -100,17 +117,44 @@ public class Enemy extends GameObject{
         frameDelay++;
         if (frameDelay >= 10) {
             frameDelay = 0;
-            frame++;
+            frame++;                                                              //ogni 10 tick avanza di un frame
             if (frame >= 3) {
-                frame = 0;
+                frame = 0;                                                        //ritorna a frame 0 dopo aver eseguito completamente frame 2
             }
         }
 
     }
 
+    private boolean collidesWithBlock() {
+            for (int i = 0; i < handler.object.size(); i++) {
+                GameObject tempObject = handler.object.get(i);
+                if (tempObject.getId() == ID.Block && getBoundsBig().intersects(tempObject.getBounds())) {
+                        return true;
+                }
+            }
+            return false;
+        }
+
+    private void clampToWorld() {
+        if (x < 0) {
+            x = 0; velX = 0;
+        }
+        if (y < 0) {
+            y = 0; velY = 0;
+        }
+        if (x > Constants.WORLD_WIDTH - renderSize) {
+            x = Constants.WORLD_WIDTH - renderSize; velX = 0;
+        }
+        if (y > Constants.WORLD_HEIGHT - renderSize) {
+            y = Constants.WORLD_HEIGHT - renderSize; velY = 0;
+        }
+    }
+
+
+    @Override
     public void render(Graphics g) {
         int row;
-        switch (dir) {
+        switch (dir) {                                                             //switch per cambiare il "verso" del nemico in base a dove guarda
             case UP:
                 row = 0;
                 break;
@@ -123,18 +167,22 @@ public class Enemy extends GameObject{
             default:
                 row = 3;
                 break;
-        };
+        }
 
         enemy_ss = ss.grabImage(COL_OFFSET + frame, row, 16, 16);
-        g.drawImage(enemy_ss, x, y, 32, 32, null);     //prende lo spritesheet del nemico
+        g.drawImage(enemy_ss, x, y, renderSize, renderSize, null);     //prende lo spritesheet del nemico
     }
 
+    @Override
     public Rectangle getBounds() {                                              //hitbox del nemico
         return new Rectangle(x, y, 32, 32);
     }
 
     public Rectangle getBoundsBig() {                                           //"area" di collisione del nemico per non finire nel muro
         return new Rectangle(x-4, y-4, 40, 40);
+    }
+
+    protected void onDeath() {
     }
 
 }
