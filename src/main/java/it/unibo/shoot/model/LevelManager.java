@@ -3,6 +3,7 @@ package it.unibo.shoot.model;
 import java.util.*;
 import it.unibo.shoot.Upgrades.*;
 import it.unibo.shoot.audio.Sound;
+import it.unibo.shoot.model.Game;
 
 
 public class LevelManager {
@@ -11,6 +12,8 @@ public class LevelManager {
     private int nextLevelXP = 100;
     private long lastLevelUpTime = 0;
     private List<Upgrade> availableUpgrades;
+    private List<Upgrade> currentUpgradeOptions = new ArrayList<>();
+    private Player player;
     Game game;
 
     public LevelManager(Game game) {
@@ -36,7 +39,6 @@ public class LevelManager {
         currentLevel++;
         nextLevelXP = (int) (nextLevelXP * 1.25);
         game.getSound().play(Sound.SoundType.LEVEL_UP);
-        this.lastLevelUpTime = System.currentTimeMillis();
         triggerLevelUpMenu();
     }
     public int getCurrentLevel() {
@@ -79,7 +81,5 @@ public class LevelManager {
     public int getNextLevelXP() {
         return this.nextLevelXP;
     }
-    public long getLastLevelUpTime() {
-    return this.lastLevelUpTime;
-    }
+
 }
