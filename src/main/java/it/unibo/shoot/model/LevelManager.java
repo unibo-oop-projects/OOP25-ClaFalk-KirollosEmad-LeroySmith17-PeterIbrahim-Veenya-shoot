@@ -40,6 +40,7 @@ public class LevelManager {
         nextLevelXP = (int) (nextLevelXP * 1.25);
         game.getSound().play(Sound.SoundType.LEVEL_UP);
         triggerLevelUpMenu();
+        this.lastLevelUpTime = System.currentTimeMillis();
     }
     public int getCurrentLevel() {
         return this.currentLevel;}
@@ -80,6 +81,9 @@ public class LevelManager {
 
     public int getNextLevelXP() {
         return this.nextLevelXP;
+    }
+    public long getLastLevelUpTime() {
+    return this.lastLevelUpTime;
     }
 
 }
