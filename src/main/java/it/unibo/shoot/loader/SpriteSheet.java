@@ -11,6 +11,7 @@ public class SpriteSheet {
         this.image = image;
     }
 
+    //TODO: Sistemare sto schifo...
     // ==========================================
     // METODO 1: (Per Block e Floor) 
     // ==========================================
