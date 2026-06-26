@@ -114,34 +114,34 @@ public class PlayerModel {
     }
 
     public void takeDamage(int damage) {
-        // 1. Se sei già a 0, il codice si ferma. I morti non prendono danni extra.
+        // 1. Se sei già a 0, il codice si ferma.
         if (this.health <= 0) {
-        this.health = 0;
-        this.isDead = true; // <--- FONDAMENTALE!
-        System.out.println("GAME OVER! Vita: 0");
-    }
+            this.health = 0;
+            this.isDead = true; 
+            System.out.println("GAME OVER! Vita: 0");
+            return; // <--- FONDAMENTALE: ferma l'esecuzione se è già morto!
+        }
 
-    // Incorporate Dodge Mechanism before checking damage
+        // Incorporate Dodge Mechanism before checking damage
         if (Math.random() < this.dodgeChance) {
             System.out.println("Schivato! Nessun danno subito.");
             return; 
         }
 
-        // 2. Controllo del tempo: chiediamo a Java l'ora esatta in millisecondi
+        // 2. Controllo del tempo per I-Frames
         long currentTime = System.currentTimeMillis();
-        
-        // Se la differenza tra "ora" e "l'ultima volta che hai preso danno" è minore di 1 secondo...
         if (currentTime - lastDamageTime < iFramesDuration) {
-            return; // ...ignora il colpo! Sei invincibile.
+            return; // Ignora il colpo
         }
 
-        // 3. Se il codice arriva fin qui, è passato più di 1 secondo. Prendi danno!
+        // 3. Prendi danno
         this.health -= damage;
-        this.lastDamageTime = currentTime; // Resetta il cronometro per il prossimo colpo
+        this.lastDamageTime = currentTime; 
 
-        // 4. Controllo del Game Over
+        // 4. CONTROLLO DEL GAME OVER (IL BUG CHE HA FATTO FALLIRE IL TEST ERA QUI)
         if (this.health <= 0) {
             this.health = 0;
+            this.isDead = true; // <--- IL FLAG FONDAMENTALE CHE MANCAVA!
             System.out.println("GAME OVER! Vita: 0");
         } else {
             System.out.println("Danno subito! Vita attuale: " + this.health);
