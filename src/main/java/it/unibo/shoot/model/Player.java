@@ -8,6 +8,7 @@ import it.unibo.shoot.view.PlayerView;
 import it.unibo.shoot.controller.PlayerController;
 import it.unibo.shoot.loader.SpriteSheet;
 import it.unibo.shoot.GameObjects.GameObject;
+import it.unibo.shoot.audio.Sound;
 
 public class Player extends GameObject {
 
@@ -32,7 +33,8 @@ public class Player extends GameObject {
     @Override
     public void tick() {
         if (model.isDead()) {
-            Game.gameState = STATE.GAME_OVER;
+            game.setGameState(STATE.GAME_OVER);
+            game.getSound().play(Sound.SoundType.GAME_OVER);
             return; // Esce immediatamente, non disegna e non calcola più nulla.
         }
         controller.update(); 
@@ -69,7 +71,7 @@ public class Player extends GameObject {
 
             if (tempObject.getId() == ID.Crate) {
                 if (getBounds().intersects(tempObject.getBounds())) {
-                    game.ammo += 20;
+                    game.ammo += 50;
                     handler.removeObject(tempObject);
                     i--;
                 }
@@ -152,4 +154,7 @@ public class Player extends GameObject {
     /*public int getExperience() {
     return model.currentXP();
     }*/
+   public Game getGame() {
+    return this.game; // Ritorna il riferimento al Game reale passato nel costruttore
+}
 }

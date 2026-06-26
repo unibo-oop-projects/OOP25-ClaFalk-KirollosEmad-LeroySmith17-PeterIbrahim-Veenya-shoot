@@ -2,16 +2,20 @@ package it.unibo.shoot.controller;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
+
 import it.unibo.shoot.GameObjects.*;
 import it.unibo.shoot.view.Camera;
 import it.unibo.shoot.Upgrades.*;
 import it.unibo.shoot.model.*;
+import it.unibo.shoot.audio.Sound;
 
 public class MouseInput extends MouseAdapter {
 
-    private Handler handler;
-    private Camera camera;
-    private Game game;
+    private final Handler handler;
+    private final Camera camera;
+    private final Game game;
+
     public MouseInput(Handler handler, Camera camera, Game game) {
         this.handler = handler;
         this.camera = camera;
@@ -20,48 +24,61 @@ public class MouseInput extends MouseAdapter {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        long currentTime = System.currentTimeMillis();
     
-        // Se sono passati MENO di 2000 millisecondi (2 secondi), ignora il click!
-        if (currentTime - Game.levelUpTime < 2000) {
-        return; 
-        }
-
+        // Se sono passati MENO di 2000 millisecondi (2 secondi), ignora il click
+        
 
         int mx = e.getX();
         int my = e.getY();
 
         // CASO 1: SE IL GIOCO È IN STATO LEVEL_UP, INTERCETTA I CLICK SUL MENU
-        if (Game.gameState == STATE.LEVEL_UP) {
-            for (int i = 0; i < Game.currentUpgradeOptions.size(); i++) {
-                int cardX = 120 + (i * 260);
-                int cardY = 180;
-                int cardW = 220;
-                int cardH = 250;
-
-                // Controlla se il click del mouse è dentro il perimetro rettangolare della carta
-                if (mx >= cardX && mx <= cardX + cardW && my >= cardY && my <= cardY + cardH) {
-                    Upgrade selected = Game.currentUpgradeOptions.get(i);
-                    
-                    // Recupera il giocatore dall'handler ed applica il bonus
-                    Player player = (Player) handler.getPlayer();
-                    if (player != null) {
-                        selected.apply(player);
-                    }
-
-                    // Pulisci le opzioni e torna a combattere!
-                    Game.currentUpgradeOptions.clear();
-                    Game.gameState = STATE.GAME;
-                    break;
-                }
-            }
-            return; // Blocca la propagazione così il giocatore non spara mentre sceglie
+        if (game.getGameState() == STATE.LEVEL_UP) {
+        
+    
+        // 1. Recupera il tempo in cui è apparso il menu
+        long tempoInizioMenu = game.getLevelManager().getLastLevelUpTime(); 
+        long tempoCorrente = System.currentTimeMillis();
+    
+        // 2. Se sono passati meno di 2000 millisecondi (2 secondi), blocca il clic
+        if (tempoCorrente - tempoInizioMenu < 2000) {
+        System.out.println("Clic bloccato! Aspetta che finisca il cooldown.");
+        return; // Esce dal metodo e ignora il clic sul menu
         }
+        List<Upgrade> options = game.getUpgradeOptions();
+
+        for (int i = 0; i < options.size(); i++) {
+
+            int cardX = 120 + (i * 260);
+            int cardY = 180;
+            int cardW = 220;
+            int cardH = 250;
+
+            if (mx >= cardX && mx <= cardX + cardW &&
+                my >= cardY && my <= cardY + cardH) {
+
+                Upgrade selected = options.get(i);
+
+                Player player = (Player) handler.getPlayer();
+                if (player != null) {
+                    selected.apply(player);
+                }
+
+                options.clear();
+                game.setGameState(STATE.GAME);
+                return;
+            }
+    }
+    return;
+}
         
         
-        if (Game.gameState == STATE.MENU) {
-            Game.gameState = STATE.GAME; // Cambia stato e avvia l'azione!
+        if (game.getGameState() == STATE.MENU) {
+            game.setGameState(STATE.GAME); // Cambia stato e avvia l'azione!
             return; // Ferma il codices q
+        }
+
+        if (game.getGameState() != STATE.GAME) {
+            return;
         }
 
 
@@ -83,6 +100,7 @@ public class MouseInput extends MouseAdapter {
 
                 // Creiamo il proiettile che viaggia da startX,startY fino a worldX,worldY
                 handler.addObject(new Bullet(startX, startY, ID.Bullet, handler, worldX, worldY, null, damage));
+                game.getSound().play(Sound.SoundType.SHOOT);
                 game.ammo--;
                 break; // Usciamo dal ciclo, abbiamo già sparato
             }

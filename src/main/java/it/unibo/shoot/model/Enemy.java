@@ -69,7 +69,7 @@ public class Enemy extends GameObject{
                 }
             }
 
-            if (tempObject.getId() == ID.Bullet) {                              //controlla se il nemico è colpito da un proiettile
+            if (tempObject.getId() == ID.Bullet) {                              //controlla se il nemico viene colpito da un proiettile
                 if (getBounds().intersects(tempObject.getBounds())){
                     hp -= ((Bullet) tempObject).getDamage();                               //se colpito, perde hp in base al danno del proiettile
                     handler.removeObject(tempObject);
@@ -102,7 +102,7 @@ public class Enemy extends GameObject{
             }
             
 
-        if (player != null && !collision) {                                      //se non collide con un muro, si avvicina al player
+        if (player != null) {
             float diffX = player.getX() - x;
             float diffY = player.getY() - y;
 

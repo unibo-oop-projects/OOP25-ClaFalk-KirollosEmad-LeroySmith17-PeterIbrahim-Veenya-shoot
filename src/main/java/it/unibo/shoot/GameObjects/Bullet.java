@@ -60,8 +60,8 @@ public class Bullet extends GameObject {
 
     @Override
     public void render(Graphics g) {
-        g.setColor(Color.yellow);
-        g.fillOval((int)x, (int)y, 8, 8); // Un piccolo cerchio giallo
+        g.setColor(Color.blue);
+        g.fillOval((int)x, (int)y, 8, 8); // Un piccolo cerchio
     }
 
     @Override

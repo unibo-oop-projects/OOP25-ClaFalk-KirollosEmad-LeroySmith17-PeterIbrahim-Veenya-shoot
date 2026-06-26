@@ -18,14 +18,6 @@ import it.unibo.shoot.util.Constants;
  * Parses a PNG map image and populates the Handler with the corresponding GameObjects.
  * Each pixel color maps to a specific object type.
  *
- * <ul>
- *   <li>Red   (255,0,0)   → Block</li>
- *   <li>Blue  (0,0,255)   → Player</li>
- *   <li>Green (0,255,0)   → Enemy1</li>
- *   <li>Yellow(255,255,0) → Enemy2</li>
- *   <li>Cyan  (0,255,255) → Enemy3</li>
- *   <li>Magenta(255,0,255)→ Crate</li>
- * </ul>
  */
 public class LevelLoader {
 
@@ -37,16 +29,16 @@ public class LevelLoader {
     /**
      * Creates a LevelLoader.
      *
-     * @param handler      the handler to populate with objects.
-     * @param resources    the loaded game resources.
+     * @param handler the handler to populate with objects.
+     * @param resources the loaded game resources.
      * @param levelManager the level manager to bind enemies to.
-     * @param game         the game instance, passed to Player.
+     * @param game the game instance, passed to Player.
      */
     public LevelLoader(Handler handler, ResourceLoader resources, LevelManager levelManager, Game game) {
-        this.handler      = handler;
-        this.resources    = resources;
+        this.handler = handler;
+        this.resources = resources;
         this.levelManager = levelManager;
-        this.game         = game;
+        this.game = game;
     }
 
     /**
@@ -63,9 +55,9 @@ public class LevelLoader {
         for (int xx = 0; xx < w; xx++) {
             for (int yy = 0; yy < h; yy++) {
                 int pixel = image.getRGB(xx, yy);
-                int red   = (pixel >> 16) & 0xff;
-                int green = (pixel >> 8)  & 0xff;
-                int blue  = (pixel)       & 0xff;
+                int red = (pixel >> 16) & 0xff;
+                int green = (pixel >> 8) & 0xff;
+                int blue = (pixel) & 0xff;
 
                 int tx = xx * Constants.TILE_SIZE;
                 int ty = yy * Constants.TILE_SIZE;

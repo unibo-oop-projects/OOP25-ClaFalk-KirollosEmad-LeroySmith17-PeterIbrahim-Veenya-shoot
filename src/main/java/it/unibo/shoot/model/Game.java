@@ -12,18 +12,20 @@ import it.unibo.shoot.util.Constants;
 import it.unibo.shoot.view.Camera;
 import it.unibo.shoot.view.GameRenderer;
 import it.unibo.shoot.view.Window;
+import it.unibo.shoot.audio.Sound;
 
 /**
- * Core game class. Manages the game loop, game state, and coordinates
+ * Core game class. Manages the game loop, game state, sound, and coordinates
  * the main subsystems: handler, camera, renderer, spawners, and level loading.
  * 
  * The game behavior changes depending on the current STATE
  * (MENU, GAME, LEVEL_UP, GAME_OVER).
  */
 public class Game extends Canvas implements Runnable {
+    
 
-    public static STATE gameState = STATE.MENU;
-    public static List<Upgrade> currentUpgradeOptions = new ArrayList<>();
+    public STATE gameState = STATE.MENU;
+    private List<Upgrade> currentUpgradeOptions = new ArrayList<>();
 
     public int ammo = 50;
 
@@ -35,6 +37,7 @@ public class Game extends Canvas implements Runnable {
     private final LevelManager levelManager;
     private final GameRenderer renderer;
     private final ResourceLoader resources;
+    private final Sound sound;
 
     private Spawner spawner;
     private BossSpawner bossSpawner;
@@ -47,8 +50,9 @@ public class Game extends Canvas implements Runnable {
         handler = new Handler();
         camera = new Camera(0, 0);
         resources = new ResourceLoader();
+        sound = new Sound();
 
-        levelManager = new LevelManager(null);
+        levelManager = new LevelManager(this);
         LevelLoader levelLoader = new LevelLoader(handler, resources, levelManager, this);
         player = levelLoader.load(resources.getLevelImage());
         levelManager.setPlayer(player);
@@ -67,9 +71,9 @@ public class Game extends Canvas implements Runnable {
      */
     public void restartGame() {
         handler.clearAllObjects();
-        this.ammo = 50;
+        this.ammo = 100;
 
-        LevelManager freshLevelManager = new LevelManager(null);
+        LevelManager freshLevelManager = new LevelManager(this);
         LevelLoader levelLoader = new LevelLoader(handler, resources, freshLevelManager, this);
         player = levelLoader.load(resources.getLevelImage());
 
@@ -80,7 +84,7 @@ public class Game extends Canvas implements Runnable {
         spawner = new Spawner(handler, resources.getEnemySS(), resources.getLevelImage(), freshLevelManager);
         bossSpawner = new BossSpawner(handler, resources.getEnemySS(), resources.getCrateImage(), freshLevelManager);
 
-        Game.gameState = STATE.GAME;
+        this.setGameState(STATE.GAME);
     }
 
     /**
@@ -106,7 +110,7 @@ public class Game extends Canvas implements Runnable {
                 delta--;
             }
 
-            renderer.render(gameState, ammo, currentUpgradeOptions);
+            renderer.render(getGameState(), ammo, currentUpgradeOptions);
             //frames++;
 
             if (System.currentTimeMillis() - timer > 1000) {
@@ -130,7 +134,6 @@ public class Game extends Canvas implements Runnable {
                 camera.tick((Player) handler.getPlayer());
             }
         }
-        // MENU, GAME_OVER, LEVEL_UP: physics frozen
     }
 
     /**
@@ -152,5 +155,64 @@ public class Game extends Canvas implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Sets the state of the game.
+     * 
+     * @param state of the game we want to set.
+     */
+    public void setGameState(STATE state) {
+        this.gameState = state;
+
+        if (state==STATE.GAME_OVER) {
+            sound.stopBackgroundMusic();
+        } else {
+            sound.startBackgroundMusic();
+        }
+    }
+
+    /**
+     * Returs the current state of the game.
+     * 
+     * @return the state of the game.
+     */
+    public STATE getGameState() {
+        return this.gameState;
+    }
+
+    /**
+     * Sets the upgrade options in the level-up menu.
+     * 
+     * @param options list of selected upgrades that will be shown to player.
+     */
+    public void setUpgradeOptions(List<Upgrade> options) {
+        this.currentUpgradeOptions = new ArrayList<>(options);
+    }
+
+    /**
+     * Returns the list of options currently available.
+     * 
+     * @return list of currently available options.
+     */
+    public List<Upgrade> getUpgradeOptions() {
+        return currentUpgradeOptions;
+    }
+
+    
+    /**
+     * Returns the Sound used to manage audio in game.
+     * 
+     * @return sound object
+     */
+    public Sound getSound() {
+        return sound;
+    }
+    /**
+     * Ritorna l'istanza del LevelManager attualmente utilizzata nel gioco.
+     * @return il levelManager corrente
+     */
+    public LevelManager getLevelManager() {
+    return this.levelManager;
     }
 }

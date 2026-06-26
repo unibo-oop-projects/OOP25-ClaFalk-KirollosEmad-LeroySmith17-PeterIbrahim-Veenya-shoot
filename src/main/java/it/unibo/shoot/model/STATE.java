@@ -1,6 +1,5 @@
 package it.unibo.shoot.model;
 
-
 /**
  * Represents the possible states of the game.
  */

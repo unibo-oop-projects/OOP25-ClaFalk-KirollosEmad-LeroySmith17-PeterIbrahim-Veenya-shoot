@@ -25,14 +25,14 @@ public class PlayerController implements KeyListener {
         int key = e.getKeyCode(); // CORREZIONE 1: Salviamo il tasto premuto in una variabile
         pressedKeys.add(key);
         if (e.getKeyCode() == KeyEvent.VK_R) {
-          if (Game.gameState == STATE.GAME_OVER) {
+          if (game.getGameState() == STATE.GAME_OVER) {
           game.restartGame(); 
           }
           }
 
          if (key == KeyEvent.VK_X) {
         // Only exit if the game is over or in the main menu
-        if (Game.gameState == STATE.GAME_OVER || Game.gameState == STATE.MENU) {
+        if (game.getGameState() == STATE.GAME_OVER || game.getGameState() == STATE.MENU) {
             System.exit(0);
         }
         } 
@@ -57,7 +57,7 @@ public class PlayerController implements KeyListener {
         } */
     }
     public void update() {
-    if (Game.gameState == STATE.GAME_OVER) {
+    if (game.getGameState() == STATE.GAME_OVER) {
             return;
     }
     
@@ -89,7 +89,7 @@ public class PlayerController implements KeyListener {
         int key = e.getKeyCode();
 
         // RESTART TRIGGER WHEN GAME OVER
-        if (Game.gameState == STATE.GAME_OVER) {
+        if (game.getGameState() == STATE.GAME_OVER) {
             if (key == KeyEvent.VK_R) {
                 game.restartGame();  // Run complete game reset pipeline
                 pressedKeys.clear(); // Clear standard cached directions
