@@ -1,5 +1,8 @@
 package it.unibo.shoot.model;
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.OptionalDouble;
 
 public class PlayerModel {
     private double x, y;
@@ -7,6 +10,8 @@ public class PlayerModel {
     private int health;
     private int maxHealth;
     private boolean isDead = false;
+    // Telemetria per l'analisi dei danni (Richiesta per logica funzionale)
+    private final List<Integer> damageHistory = new ArrayList<>();
    
     
     // --- NEW UPGRADE STATS FIELDS ---
@@ -137,7 +142,7 @@ public class PlayerModel {
         // 3. Prendi danno
         this.health -= damage;
         this.lastDamageTime = currentTime; 
-
+        this.damageHistory.add(damage);
         // 4. CONTROLLO DEL GAME OVER (IL BUG CHE HA FATTO FALLIRE IL TEST ERA QUI)
         if (this.health <= 0) {
             this.health = 0;
@@ -173,5 +178,30 @@ public class PlayerModel {
 
     public void setHealth(int health) {
         this.health = health ; 
+    }
+    // =========================================
+    // METODI FUNZIONALI (STREAM API & OPTIONAL)
+    // =========================================
+
+    /**
+     * Calcola la media matematica dei danni subiti dall'inizio della partita.
+     * Utilizza Stream API e OptionalDouble per gestire il caso in cui non si siano subiti danni.
+     */
+    public double getAverageDamageTaken() {
+        return damageHistory.stream()
+                            .mapToInt(Integer::intValue)
+                            .average()
+                            .orElse(0.0);
+    }
+
+    /**
+     * Trova il singolo colpo più devastante incassato dal giocatore.
+     * Utilizza Lambda e pipeline di mapping.
+     */
+    public int getMaxDamageTaken() {
+        return damageHistory.stream()
+                            .mapToInt(Integer::intValue)
+                            .max()
+                            .orElse(0);
     }
 }
