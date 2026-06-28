@@ -17,6 +17,7 @@ public class PauseController implements KeyListener {
         this.game = game;
     }
 
+    /** Toggles the game state between GAME and PAUSE when the ESC key is pressed */
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
