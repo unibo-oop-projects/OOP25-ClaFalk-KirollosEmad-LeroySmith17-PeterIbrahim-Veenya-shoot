@@ -6,6 +6,7 @@ import java.util.List;
 
 import it.unibo.shoot.Upgrades.Upgrade;
 import it.unibo.shoot.controller.MouseInput;
+import it.unibo.shoot.controller.PauseController;
 import it.unibo.shoot.loader.LevelLoader;
 import it.unibo.shoot.loader.ResourceLoader;
 import it.unibo.shoot.util.Constants;
@@ -63,6 +64,7 @@ public class Game extends Canvas implements Runnable {
 
         new Window(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT, Constants.TITLE, this);
         this.addMouseListener(new MouseInput(handler, camera, this));
+        this.addKeyListener(new PauseController(this));
     }
 
     /**
