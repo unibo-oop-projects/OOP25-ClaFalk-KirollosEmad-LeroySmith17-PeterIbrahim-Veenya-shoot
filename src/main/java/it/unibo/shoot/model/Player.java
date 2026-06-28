@@ -35,7 +35,7 @@ public class Player extends GameObject {
         if (model.isDead()) {
             game.setGameState(STATE.GAME_OVER);
             game.getSound().play(Sound.SoundType.GAME_OVER);
-            return; // Esce immediatamente, non disegna e non calcola più nulla.
+            return; 
         }
         controller.update(); 
         model.updatePosition();
@@ -55,15 +55,15 @@ public class Player extends GameObject {
             
             if (tempObject.getId() == ID.Block) {
                 if (getBounds().intersects(tempObject.getBounds())) {
-                    // Torna indietro
+                    
                     this.x -= velX;
                     this.y -= velY;
 
-                    // Sincronizza il model
+                    
                     model.setX(this.x);
                     model.setY(this.y);
 
-                    // Ferma la velocità
+                    
                     model.setVelocity(0, 0);
                 }
             }
@@ -150,10 +150,8 @@ public class Player extends GameObject {
     public int getHealth() {
     return model.getHealth();
     }
-    /*public int getExperience() {
-    return model.currentXP();
-    }*/
+   
    public Game getGame() {
-    return this.game; // Ritorna il riferimento al Game reale passato nel costruttore
+    return this.game; 
 }
 }
