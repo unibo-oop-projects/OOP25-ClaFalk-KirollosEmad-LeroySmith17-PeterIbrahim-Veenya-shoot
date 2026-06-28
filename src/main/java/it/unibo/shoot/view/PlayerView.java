@@ -14,9 +14,7 @@ public class PlayerView {
 
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
-                // TAGLIO SU MISURA PER IMMAGINE 128x60
-                // Larghezza frame: 32 (128/4)
-                // Altezza frame: 15 (60/4)
+                
                 animations[r][c] = ss.grabImage(c, r, 32, 15); 
             }
         }
@@ -28,8 +26,7 @@ public class PlayerView {
         int x = (int)model.getX();
         int y = (int)model.getY();
         
-        // Disegniamo lo sprite forzandolo a diventare 32x32 
-        // così non sembra schiacciato e occupa tutto il blocco del gioco
+        
         g2.drawImage(currentSprite, x, y, 32, 32, null); 
     }
 }
