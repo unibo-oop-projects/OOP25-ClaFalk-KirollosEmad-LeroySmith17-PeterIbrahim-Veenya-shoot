@@ -56,5 +56,4 @@ public class Constants {
     public static final int[] COL_SUBTITLE = {220, 190, 255};
     public static final int[] COL_MENU_BG = { 25,  10,  35};
     public static final int[] COL_DEAD = {255, 120, 160};
-    
 }
