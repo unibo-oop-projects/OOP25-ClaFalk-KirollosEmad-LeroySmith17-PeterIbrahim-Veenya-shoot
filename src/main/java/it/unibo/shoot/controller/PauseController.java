@@ -5,7 +5,10 @@ import java.awt.event.KeyListener;
 import it.unibo.shoot.model.Game;
 import it.unibo.shoot.model.STATE;
 
-/** Handler keyboard input for pausing and resuming the game. */
+/** 
+ * Handler keyboard input for pausing and resuming the game. 
+ * Listens for the ESC key and toggles the game state between GAME and PAUSE.
+ */
 public class PauseController implements KeyListener {
 
     private final Game game;
