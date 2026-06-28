@@ -25,8 +25,14 @@ public class ResourceLoader {
         crateImage = loader.loadImage("/object/crate.png");
     }
 
-    public SpriteSheet getTileSS() { return tileSS; }
-    public SpriteSheet getPlayerSS() { return playerSS; }
+    public SpriteSheet getTileSS() { 
+        return tileSS;
+    }
+
+    public SpriteSheet getPlayerSS() { 
+        return playerSS; 
+    }
+    
     public SpriteSheet getEnemySS() { return enemySS; }
     public BufferedImage getCrateImage() { return crateImage; }
     public BufferedImage getLevelImage() { return levelImage; }
