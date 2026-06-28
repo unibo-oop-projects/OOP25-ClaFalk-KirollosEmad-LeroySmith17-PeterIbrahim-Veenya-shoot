@@ -38,7 +38,6 @@ public class Enemy extends GameObject{
     public void tick()  {
 
         boolean collision = false;
-        GameObject player = null;
         int oldX = x;
         int oldY = y;
         x += velX;
@@ -53,15 +52,14 @@ public class Enemy extends GameObject{
             else dir = Direction.UP;
         }
 
+        GameObject player = findPlayer();
+
+        if (player != null && getBounds().intersects(player.getBounds())) {                       //controlla se il nemico colpisce il player
+                ((Player) player).takeDamage(damage);                                       //se colpisce, il player perde hp in base al danno del nemico
+            }
+
         for (int i = 0; i < handler.object.size(); i++) {
             GameObject tempObject = handler.object.get(i);
-
-            if (tempObject.getId() == ID.Player) {                               //trova il player
-                player = tempObject;
-                if(getBounds().intersects(tempObject.getBounds())) {
-                    ((Player) tempObject).takeDamage(damage);
-                }
-            }
         
             if (tempObject.getId() == ID.Block) {
                 if (getBoundsBig().intersects(tempObject.getBounds())){
@@ -126,14 +124,9 @@ public class Enemy extends GameObject{
     }
 
     private boolean collidesWithBlock() {
-            for (int i = 0; i < handler.object.size(); i++) {
-                GameObject tempObject = handler.object.get(i);
-                if (tempObject.getId() == ID.Block && getBoundsBig().intersects(tempObject.getBounds())) {
-                        return true;
+                        return handler.object.stream()
+                        .anyMatch(obj -> obj.getId() == ID.Block && getBoundsBig().intersects(obj.getBounds()));
                 }
-            }
-            return false;
-        }
 
     private void clampToWorld() {
         if (x < 0) {
@@ -148,6 +141,13 @@ public class Enemy extends GameObject{
         if (y > Constants.WORLD_HEIGHT - renderSize) {
             y = Constants.WORLD_HEIGHT - renderSize; velY = 0;
         }
+    }
+
+    private GameObject findPlayer() {
+        return handler.object.stream()
+                .filter(obj -> obj.getId() == ID.Player)
+                .findFirst()
+                .orElse(null);
     }
 
 

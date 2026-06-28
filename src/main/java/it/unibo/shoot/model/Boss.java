@@ -12,7 +12,7 @@ public class Boss extends Enemy {
     final private BufferedImage crate_image;
 
     public Boss(int x, int y, ID id, SpriteSheet ss, Handler handler, LevelManager levelManager, BufferedImage crate_image, BossSpawner bossSpawner) {
-        super(x, y, id, ss, handler, 0.5f, levelManager);
+        super(x, y, id, ss, handler, 1.0f, levelManager);
         this.COL_OFFSET = 0;
         this.hp = 300;
         this.damage = 40;
