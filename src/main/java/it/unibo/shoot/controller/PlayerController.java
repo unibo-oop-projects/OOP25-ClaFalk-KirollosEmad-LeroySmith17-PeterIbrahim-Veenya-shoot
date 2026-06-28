@@ -37,15 +37,6 @@ public class PlayerController implements KeyListener {
             }   
         } 
 
-        // PAUSE
-        if (key == KeyEvent.VK_ESCAPE) {
-            if (game.getGameState() == STATE.GAME) {
-                game.setGameState(STATE.PAUSE);
-            } else if (game.getGameState() == STATE.PAUSE) {
-                game.setGameState(STATE.GAME);
-            }
-        }
-
 
 
         // CORREZIONE 2: Logica di sparo con la barra spaziatrice
@@ -66,7 +57,7 @@ public class PlayerController implements KeyListener {
         } */
     }
     public void update() {
-    if (game.getGameState() == STATE.GAME_OVER || game.getGameState() == STATE.PAUSE) {
+    if (game.getGameState() == STATE.GAME_OVER) {
             return;
     }
     
