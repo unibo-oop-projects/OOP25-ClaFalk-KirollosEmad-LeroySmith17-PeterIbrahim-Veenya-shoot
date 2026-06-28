@@ -100,7 +100,6 @@ public class Game extends Canvas implements Runnable {
         final double ns = 1_000_000_000 / 60.0;
         double delta = 0;
         long timer = System.currentTimeMillis();
-        //int frames = 0;
 
         while (isRunning) {
             long now = System.nanoTime();
@@ -113,11 +112,9 @@ public class Game extends Canvas implements Runnable {
             }
 
             renderer.render(getGameState(), ammo, currentUpgradeOptions);
-            //frames++;
 
             if (System.currentTimeMillis() - timer > 1000) {
                 timer += 1000;
-                //frames = 0;
             }
         }
         stop();
