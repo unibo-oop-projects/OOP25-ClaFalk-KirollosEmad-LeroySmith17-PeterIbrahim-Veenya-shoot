@@ -1,4 +1,5 @@
 package it.unibo.shoot.model;
+
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +7,10 @@ import java.util.OptionalDouble;
 
 /**
  * Modello logico del giocatore.
- * * Gestisce lo stato matematico (posizione, velocità), le statistiche vitali
- * e le regole di business legate al combattimento (calcolo danni, frame di invulnerabilità, schivata).
+ * Custodisce lo stato matematico (coordinate fisiche, velocità), i parametri vitali 
+ * e la logica di business associata al combattimento e alla telemetria.
+ * Questa classe è totalmente indipendente dal rendering grafico e dai sistemi I/O hardware,
+ * permettendone il test automatizzato in totale isolamento.
  */
 public class PlayerModel {
    
@@ -17,7 +20,6 @@ public class PlayerModel {
     private int maxHealth;
     private boolean isDead = false;
     
-   
     private final List<Integer> damageHistory = new ArrayList<>();
     
     private double damageMultiplier = 1.0; 
@@ -25,7 +27,6 @@ public class PlayerModel {
     private double pickupRange = 1.0;       
 
     private float velX = 0, velY = 0;
-    
     
     private int aniTick, aniIndex, aniSpeed = 10; 
     private boolean isMoving = false;
@@ -46,10 +47,10 @@ public class PlayerModel {
     }
 
     /**
-     * Ripristina la salute del giocatore.
-     * Garantisce che la vita non superi mai il limite massimo imposto da maxHealth.
+     * Ripristina la salute del giocatore applicando un hard-clamping superiore.
+     * Garantisce matematicamente che la vita corrente non superi mai il limite massimo.
      *
-     * @param amount La quantità di punti vita da ripristinare.
+     * @param amount La quantità di punti vita grezzi da ripristinare.
      */
     public void heal(int amount) {
         this.health += amount;
@@ -59,17 +60,16 @@ public class PlayerModel {
     }
 
     /**
-     * Calcola il vettore di velocità e deduce la direzione dello sguardo (row) 
-     * per l'animazione in base all'input.
+     * Traduce gli input direzionali in vettori di velocità spaziale scalati per la statistica 'speed'.
+     * Dedurrà dinamicamente l'indice direzionale ('row') da fornire alla View per il rendering vettoriale.
      *
-     * @param dx Moltiplicatore di direzione sull'asse X (-1, 0, 1)
-     * @param dy Moltiplicatore di direzione sull'asse Y (-1, 0, 1)
+     * @param dx Moltiplicatore di direzione sull'asse X (-1.0f, 0.0f, 1.0f).
+     * @param dy Moltiplicatore di direzione sull'asse Y (-1.0f, 0.0f, 1.0f).
      */
     public void setVelocity(float dx, float dy) {
         this.velX = dx * (float)speed;
         this.velY = dy * (float)speed;
         this.isMoving = (dx != 0 || dy != 0);
-
         
         if (dy > 0) row = 0;      
         else if (dy < 0) row = 1; 
@@ -77,11 +77,18 @@ public class PlayerModel {
         else if (dx > 0) row = 2; 
     }
 
+    /**
+     * Applica l'ultimo vettore di velocità (velX, velY) calcolato alle coordinate spaziali assolute.
+     */
     public void updatePosition() {
         this.x += velX;
         this.y += velY;
     }
 
+    /**
+     * Avanza l'orologio dell'animazione (tick) per ciclare passivamente tra i frame
+     * del movimento. Se il giocatore è stazionario, forza l'indice al frame di Idle.
+     */
     public void updateAnimation() {
         aniTick++;
         if (aniTick >= aniSpeed) {
@@ -98,13 +105,15 @@ public class PlayerModel {
     }
 
     /**
-     * Tenta di applicare il danno al giocatore passando per tre filtri di difesa:
-     * 1. Verifica se il giocatore è già morto (evita danni negativi).
-     * 2. Tira un dado RNG per la probabilità di schivata (dodgeChance).
-     * 3. Verifica i frame di invulnerabilità (i-frames) legati al tempo reale.
-     * * Se il danno passa i filtri, aggiorna la cronologia e valuta la condizione di morte.
+     * Applica una scalatura sottrattiva alla vita valutando una gerarchia di filtri difensivi:
+     * 1. Limite vitale: Annulla l'impatto se l'entità risulta già defunta.
+     * 2. Evasione Stocastica: RNG contro dodgeChance.
+     * 3. Disaccoppiamento temporale: Ignora i danni reiterati entro la soglia degli iFramesDuration.
      *
-     * @param damage L'ammontare di danno grezzo in ingresso.
+     * Se l'attacco perfora i filtri, innesca la registrazione per la telemetria (damageHistory)
+     * e muta lo stato di isDead() qualora la salute scenda a zero.
+     *
+     * @param damage Quantità grezza di danno valutato.
      */
     public void takeDamage(int damage) {
         if (this.health <= 0) {
@@ -113,13 +122,10 @@ public class PlayerModel {
             return; 
         }
 
-        // Filtro Schivata
         if (Math.random() < this.dodgeChance) {
-            
             return; 
         }
 
-        // Filtro Invulnerabilità Temporanea (I-Frames)
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastDamageTime < iFramesDuration) {
             return;
@@ -136,17 +142,17 @@ public class PlayerModel {
     }
 
     /**
-     * Genera la hitbox spaziale del giocatore per il sistema di collisioni.
-     * * @return Il rettangolo di collisione.
+     * Costruisce il limite volumetrico (Bounding Box) necessario al calcolo delle compenetrazioni solide.
+     * @return Rettangolo di classe AWT ancorato alle coordinate attuali X e Y.
      */
     public Rectangle getHitbox() {
         return new Rectangle((int)x, (int)y, width, height);
     }
 
-    
-    // Getter & Setter di base
+    // ==========================================
+    // METODI DI DELEGA E ACCESSO
+    // ==========================================
    
-    
     public double getSpeed() { return speed; }
     public void setSpeed(double speed) { this.speed = speed; }
     public void setMaxHealth(int maxHealth) { this.maxHealth = maxHealth; }
@@ -170,6 +176,12 @@ public class PlayerModel {
     public boolean isDead() { return this.isDead; }
     public void setHealth(int health) { this.health = health ; }
 
+    /**
+     * Interroga la cronologia telemetrica per calcolare la media dei danni percorsi.
+     * Utilizza Java Stream API associato al wrapper monadico OptionalDouble per 
+     * prevenire eccezioni divisione-per-zero qualora non sussistano danni in registro.
+     * @return La stima frazionaria della media calcolata, o 0.0 se la storia è vuota.
+     */
     public double getAverageDamageTaken() {
         return damageHistory.stream()
                             .mapToInt(Integer::intValue)
@@ -177,6 +189,10 @@ public class PlayerModel {
                             .orElse(0.0);
     }
 
+    /**
+     * Scandaglia la telemetria storica estraendo la collisione dal maggiore impatto.
+     * @return Il valore di danno massimo assorbito, o 0 in caso la collezione sia intatta.
+     */
     public int getMaxDamageTaken() {
         return damageHistory.stream()
                             .mapToInt(Integer::intValue)
