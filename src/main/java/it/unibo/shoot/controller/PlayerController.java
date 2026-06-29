@@ -25,18 +25,7 @@ public class PlayerController implements KeyListener {
         pressedKeys.add(key);
 
        
-        if (key == KeyEvent.VK_R) {
-            if (game.getGameState() == STATE.GAME_OVER) {
-                game.restartGame(); 
-                pressedKeys.clear(); 
-            }
-        }
-
-        if (key == KeyEvent.VK_X) {
-            if (game.getGameState() == STATE.GAME_OVER || game.getGameState() == STATE.MENU) {
-                System.exit(0);
-            }   
-        } 
+    
     }
 
     @Override
