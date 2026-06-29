@@ -7,12 +7,13 @@ import it.unibo.shoot.util.Constants;
 
 public class Spawner {
 
-    final private Handler handler;
-    final private SpriteSheet ss;
-    final private Random r = new Random();
+    private final Handler handler;
+    private final SpriteSheet ss;
+    private final Random r = new Random();
     private int timer = 0;
-    final private BufferedImage map;
-    final private LevelManager levelManager;
+    private static final int SPAWN_TIMER = 100;
+    private final BufferedImage map;
+    private final LevelManager levelManager;
 
     public Spawner(Handler handler, SpriteSheet ss, BufferedImage map, LevelManager levelManager){
         this.handler = handler;
@@ -23,41 +24,37 @@ public class Spawner {
 
     public void tick() {
         timer++;
-        if(timer >= 100){                                      //quando il timer raggiunge il tempo si azzera e fa spawnare un nemico
+        if(timer >= SPAWN_TIMER){                                      //quando il timer raggiunge il tempo si azzera e fa spawnare un nemico
             timer = 0;
             spawnEnemy();
         }
     }
 
-    private void spawnEnemy() {
-        int x = 0;
-        int y = 0;
+    private int[] findSpawn() {
+        int x, y;
         int maxAttempts = 30;
-
         do {
             x = r.nextInt(map.getWidth()) * Constants.TILE_SIZE;                     //fa spawnare un nemico a caso nella mappa, se il punto di spawn non ? sopra un muro
             y = r.nextInt(map.getHeight()) * Constants.TILE_SIZE;
             maxAttempts--;
         } while (isWall(x,y) && maxAttempts > 0);
+        return isWall(x, y) ? null : new int[]{x, y};
+    }
 
-        if(isWall(x,y)){
-            return;                                                                 //se dopo 30 tentativi non riesce, salta lo spawn
+    private void spawnEnemy() {
+        int[] pos = findSpawn();
+        if (pos == null){
+            return;
         }
+        int x = pos [0];
+        int y = pos [1];
 
-        int enemyType = r.nextInt(3);                                       //spawna uno dei 3 nemici a caso
-        switch (enemyType) {
-            case 0:
-                handler.addObject(new Enemy1(x, y, ID.Enemy, ss, handler, levelManager));
-                break;
-        
-            case 1:
-                handler.addObject(new Enemy2(x, y, ID.Enemy, ss, handler, levelManager));
-                break;
-            
-            case 2:
-                handler.addObject(new Enemy3(x, y, ID.Enemy, ss, handler, levelManager));
-                break;
-        }
+        Enemy[] enemies = {
+            new Enemy1(x, y, ID.Enemy, ss, handler, levelManager),
+            new Enemy2(x, y, ID.Enemy, ss, handler, levelManager),
+            new Enemy3(x, y, ID.Enemy, ss, handler, levelManager)
+        };
+        handler.addObject(enemies[r.nextInt(3)]);
     }
 
     private boolean isWall(int x, int y){                                                       //serve per lo spawn dei nemici, controlla se il tile ? rosso = muro
