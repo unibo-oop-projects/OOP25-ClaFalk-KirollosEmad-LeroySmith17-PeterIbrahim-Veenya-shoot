@@ -1,6 +1,10 @@
 # Gradle
 .gradle/
 build/
+out/
+.idea/
+*.iml
+.DS_Store
 
 # Compiled class file
 *.class
