@@ -17,9 +17,7 @@ public class Bullet extends GameObject {
         this.handler = handler;
         this.damage = damage;
 
-        // Logica semplice: calcoliamo la direzione verso il mouse (mx, my)
-        // Per ora facciamo una velocità fissa verso destra/sinistra/su/giù 
-        // basata su dove guarda il player, o verso il mouse
+       
         float speed = 10;
         float diffX = mx - x;
         float diffY = my - y;
@@ -34,21 +32,20 @@ public class Bullet extends GameObject {
         x += velX;
         y += velY;
 
-        // 1. AUTO-DISTRUZIONE: Se il proiettile va fuori dai limiti del mondo, lo eliminiamo
-        // (Imposta questi numeri in base alla grandezza della tua mappa)
+        
         if (x < -1000 || x > 5000 || y < -1000 || y > 5000) {
             handler.removeObject(this);
-            return; // Ferma subito l'esecuzione di questo tick!
+            return; 
         }
 
-        // 2. COLLISIONI: Se tocca un blocco, sparisce
+       
         for (int i = 0; i < handler.getObjects().size(); i++) {
             GameObject tempObject = handler.getObjects().get(i);
             
             if (tempObject.getId() == ID.Block) {
                 if (getBounds().intersects(tempObject.getBounds())) {
-                    handler.removeObject(this); // Distruggi il proiettile
-                    break; // FONDAMENTALE! Esci dal ciclo for, non controllare altri muri.
+                    handler.removeObject(this); 
+                    break; 
                 }
             }
         }
@@ -61,7 +58,7 @@ public class Bullet extends GameObject {
     @Override
     public void render(Graphics g) {
         g.setColor(Color.blue);
-        g.fillOval((int)x, (int)y, 8, 8); // Un piccolo cerchio
+        g.fillOval((int)x, (int)y, 8, 8); 
     }
 
     @Override
