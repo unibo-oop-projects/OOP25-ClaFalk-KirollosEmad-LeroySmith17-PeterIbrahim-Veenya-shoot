@@ -1,4 +1,4 @@
-package it.unibo.shoot.upgrades;
+package it.unibo.shoot.Upgrades;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
