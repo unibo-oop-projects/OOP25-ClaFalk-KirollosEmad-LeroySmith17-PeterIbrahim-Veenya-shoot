@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import it.unibo.shoot.Upgrades.*;
 import it.unibo.shoot.loader.SpriteSheet;
 import it.unibo.shoot.model.Game;
 import it.unibo.shoot.model.Handler;
