@@ -4,10 +4,7 @@ import java.awt.event.KeyEvent;
 
 import it.unibo.shoot.model.Game;
 import it.unibo.shoot.model.STATE;
-import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import it.unibo.shoot.model.Game;
-import it.unibo.shoot.model.STATE;
 
 public class GameOverController implements KeyListener {
     private final Game game;
