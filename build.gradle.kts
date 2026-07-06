@@ -1,7 +1,13 @@
+
 plugins {
     java
     application
+
+    id("org.danilopianini.unibo-oop-gradle-plugin") version "2.0.22"
 }
+
+java { toolchain { languageVersion.set(JavaLanguageVersion.of(21)) } }
+
 
 group = "oop"
 version = "1.0.0"
